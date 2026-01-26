@@ -48,14 +48,15 @@ function Main() {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <button className="px-8 py-4 rounded-xl bg-violet-500 hover:bg-violet-300 transition font-semibold shadow-lg">
+                            {/* <button className="px-8 py-4 rounded-xl bg-violet-500 hover:bg-violet-300 transition font-semibold shadow-lg">
                                 Request Early Access
+                            </button> */}
+                            <Link to={'/brief'}>
+                            <button className="px-12 py-5 mb-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-semibold shadow-2xl hover:scale-105 transition">
+                                Brief About Us
                             </button>
-                            <Link to={'/how-it-works'}>
-                                <button className="px-8 py-4 rounded-xl border border-white/20 hover:bg-white/10 transition">
-                                    See How It Works
-                                </button>
-                            </Link>
+                        </Link>
+                            
                         </div>
                     </div>
                 </section>
@@ -124,11 +125,16 @@ function Main() {
                         <p className="text-lg md:text-xl text-slate-300 mb-12">
                             Loom-Link operates like a silent AI brain in the background — constantly thinking, predicting, and protecting your business.
                         </p>
-                        <Link to={'/brief'}>
+                        <Link to={'/how-it-works'}>
+                                <button className="px-12 py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-semibold shadow-2xl hover:scale-105 transition">
+                                    See How It Works
+                                </button>
+                            </Link>
+                        {/* <Link to={'/brief'}>
                             <button className="px-12 py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-semibold shadow-2xl hover:scale-105 transition">
                                 Brief About Us
                             </button>
-                        </Link>
+                        </Link> */}
                     </div>
                 </section>
 
@@ -170,9 +176,9 @@ function Main() {
                             <p className="max-w-3xl mx-auto text-slate-300 mb-10">
                                 We connects your data, understands your business context, and speaks to you like a human - not a dashboard.
                             </p>
-                            <button className="px-10 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition font-semibold shadow-lg">
+                            {/* <button className="px-10 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition font-semibold shadow-lg">
                                 Experience the Calm
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </section>

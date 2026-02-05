@@ -25,7 +25,7 @@ function Main() {
 
                     <div className="relative z-10 max-w-5xl text-center px-6">
                         {/* Animated chat mockup */}
-                        <div className="mx-auto mb-10 max-w-md bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 text-left animate-fade-in">
+                        <div className="mx-auto mt-5 mb-10 max-w-md bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 text-left animate-fade-in">
                             <p className="text-sm text-slate-300 mb-2">You</p>
                             <div className="bg-slate-900 rounded-xl p-3 mb-4 text-slate-200">
                                 Where is the RV for Mr. Smith?

@@ -23,8 +23,8 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path='/' element={isloading? <Main/> : <Preloader/>}/>
-        <Route path='/main' element={<Main/>}/>
+        {/* <Route path='/' element={isloading? <Main/> : <Preloader/>}/> */}
+        <Route path='/' element={<Main/>}/>
         <Route path='/how-it-works' element={<Seehw/>}/>
         <Route path='/need-help' element={<NeedHelp/>} />
         <Route path='/brief' element={<Brief/>} />

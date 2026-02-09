@@ -1,13 +1,12 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect } from "react";
 import {
   faBrain,
   faUsersGear,
   faCubes,
   faShieldHalved,
   faChartLine,
-  faLock, faArrowRight, faDatabase, faVrCardboard, faMicrochip, faChevronUp, faChevronLeft
+  faLock, faArrowRight, faDatabase, faVrCardboard, faMicrochip
 } from "@fortawesome/free-solid-svg-icons";
 
 /* ===============================
@@ -71,35 +70,9 @@ function FlowStep({ icon, title, label }) {
 /* ===============================
    MAIN PAGE COMPONENT
 ================================ */
-
 export default function Brief() {
-  const [showTopBtn, setShowTopBtn] = useState(false);
-
-  // Show button when page is scrolled down
-  useEffect(() => {
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 400) {
-        setShowTopBtn(true);
-      } else {
-        setShowTopBtn(false);
-      }
-    });
-  }, []);
-
-  const goToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
   return (
     <div className="relative min-h-screen overflow-hidden text-slate-100 font-sans">
-      <nav className="fixed top-6 left-6 z-50">
-        <button 
-          onClick={() => window.history.back()}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all text-sm text-slate-300 hover:text-white"
-        >
-          <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
-          Back
-        </button>
-      </nav>
 
       {/* ===== AI BACKGROUND ===== */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950" />
@@ -223,7 +196,7 @@ export default function Brief() {
               <div className="relative bg-indigo-600 rounded-3xl p-8 border border-indigo-400 shadow-[0_0_50px_rgba(79,70,229,0.3)]">
                 <FontAwesomeIcon icon={faMicrochip} className="text-4xl text-white mb-2" />
                 <h3 className="font-bold">LOOM-LINK</h3>
-                <p className="text-[10px] text-indigo-100 uppercase">Logic Engine</p>
+                <p className="text-[10px] text-indigo-100 uppercase">Operational Intelligence Core</p>
               </div>
             </div>
 
@@ -277,7 +250,7 @@ export default function Brief() {
       className="w-full h-full object-cover opacity-100 grayscale"
     />
     {/* Gradient Overlay to ensure text readability */}
-    <div className="absolute inset-0 bg-gradient-to-r from-indigo-950 via-slate-900/50 to-indigo-950" />
+    <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/0 to-indigo-950/50" />
   </div>
 
   {/* The Content Layer */}
@@ -307,7 +280,7 @@ export default function Brief() {
                   understands your entire database history.
                 </p>
               </div>
-              
+              <span className="text-indigo-400 font-mono text-sm">/ / DATA_ANALYST_CORE</span>
            </div>
            <ComparisonTable />
         </section>
@@ -342,14 +315,6 @@ export default function Brief() {
             never shared, and never retained.
           </p>
         </section>
-        {showTopBtn && (
-        <button
-          onClick={goToTop}
-          className="fixed bottom-0 right-8 z-50 w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 flex items-center justify-center hover:bg-indigo-500 hover:-translate-y-1 transition-all duration-300"
-        >
-          <FontAwesomeIcon icon={faChevronUp} />
-        </button>
-      )}
 
         {/* FOOTER */}
         <footer className="text-center text-slate-400 text-sm">

@@ -25,14 +25,14 @@ function Main() {
 
                     <div className="relative z-10 max-w-5xl text-center px-6">
                         {/* Animated chat mockup */}
-                        <div className="mx-auto mt-5 mb-10 max-w-md bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 text-left animate-fade-in">
+                        <div className="mx-auto m-10 max-w-md bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 text-left animate-fade-in">
                             <p className="text-sm text-slate-300 mb-2">You</p>
                             <div className="bg-slate-900 rounded-xl p-3 mb-4 text-slate-200">
-                                Where is the RV for Mr. Smith?
+                                Give me a quick status check.
                             </div>
                             <p className="text-sm text-slate-300 mb-2">Loom-Link</p>
                             <div className="bg-indigo-600/20 border border-indigo-500/30 rounded-xl p-3 text-indigo-200">
-                                RV is in <strong>Row 4</strong>, ready for dispatch ✅
+                                You're at 82% of your goal with all errors resolved and $400 saved—you're all clear.✅
                             </div>
                         </div>
                         <span className="inline-flex items-center gap-2 px-4 py-1 mb-6 rounded-full bg-white/10 text-sm backdrop-blur">

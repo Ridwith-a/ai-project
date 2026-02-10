@@ -1,23 +1,20 @@
-
-import { faBolt, faChartLine, faComments, faRocket } from '@fortawesome/free-solid-svg-icons'
 import './App.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Route, Routes } from 'react-router-dom'
 import Main from './pages/Main'
 import Seehw from './pages/Seehw'
-import Preloader from './pages/Preloader'
-import { useEffect, useState } from 'react'
+// import Preloader from './pages/Preloader'
+// import { useEffect, useState } from 'react'
 import NeedHelp from './pages/NeedHelp'
 import Brief from './pages/Brief'
 
 function App() {
-  const [isloading , setIsLoading]= useState(false)
+//   const [isloading , setIsLoading]= useState(false)
 
- useEffect(()=>{
-   setTimeout(()=>{
-    setIsLoading(true)
-  },3000)
- },[])
+//  useEffect(()=>{
+//    setTimeout(()=>{
+//     setIsLoading(true)
+//   },3000)
+//  },[])
 
 
   return (

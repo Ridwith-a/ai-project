@@ -88,7 +88,7 @@ function NeedHelp() {
 
           <nav className="flex flex-col gap-2">
             {/* HOME ACTION */}
-            <Link to="/main" className="w-full py-3 px-4 rounded-xl border border-white/5 bg-white/5 text-slate-300 text-sm hover:bg-white/10 transition-all flex items-center gap-3">
+            <Link to="/" className="w-full py-3 px-4 rounded-xl border border-white/5 bg-white/5 text-slate-300 text-sm hover:bg-white/10 transition-all flex items-center gap-3">
               <FontAwesomeIcon icon={faHome} className="text-indigo-400" /> Home
             </Link>
 

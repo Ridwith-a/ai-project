@@ -1,0 +1,6 @@
+.perspective-1000 {
+  perspective: 1000px;
+}
+.mesh-container {
+  transform: rotateX(20deg) scale(1.2);
+}

@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { Link } from "react-router-dom";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   
@@ -16,6 +18,8 @@ import {
   faQuoteLeft,
   
 } from "@fortawesome/free-solid-svg-icons";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ===============================
    SUB-COMPONENTS
@@ -72,6 +76,8 @@ function FlowStep({ icon, title, label }) {
   );
 }
 
+
+
 /* ===============================
    MAIN PAGE COMPONENT
 ================================ */
@@ -88,12 +94,110 @@ export default function Brief() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  useEffect(() => {
+    // Force scroll to top on mount
+    window.scrollTo(0, 0);
+    
+    // Optional: If you use a scroll library like Lenis or Locomotive, 
+    // you'd call their scroll-to-top method here.
+  }, []);
+  
+  
+  // NEW REFS FOR ANIMATION
+  const briefHeroRef = useRef(null);
+  const briefTitleRef = useRef(null);
+  const briefTagRef = useRef(null);
+  const briefDescRef = useRef(null);
+
+  useEffect(() => {
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    tl.fromTo(briefTagRef.current, 
+      { opacity: 0, y: 10, letterSpacing: "1.5em" }, 
+      { opacity: 1, y: 0, letterSpacing: "0.5em", duration: 1.5 }
+    )
+    .fromTo(briefTitleRef.current, 
+      { opacity: 0, filter: "blur(20px)", scale: 0.9, y: 20 }, 
+      { opacity: 1, filter: "blur(0px)", scale: 1, y: 0, duration: 1.2 }, 
+      "-=0.8"
+    )
+    .fromTo(briefDescRef.current, 
+      { opacity: 0, y: 20 }, 
+      { opacity: 1, y: 0, duration: 1 }, 
+      "-=0.5"
+    );
+  }, []);
+
+  useEffect(() => {
+  // HERO ANIMATION (Sequential Reveal)
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  tl.fromTo(briefTagRef.current, 
+    { opacity: 0, y: 10, letterSpacing: "1.5em" }, 
+    { opacity: 1, y: 0, letterSpacing: "0.5em", duration: 1.5 }
+  )
+  .fromTo(briefTitleRef.current, 
+    { opacity: 0, filter: "blur(20px)", scale: 0.9, y: 20 }, 
+    { opacity: 1, filter: "blur(0px)", scale: 1, y: 0, duration: 1.2 }, 
+    "-=0.8"
+  );
+
+  // NEW: THE VECTOR MESH ANIMATION
+  // This makes the lines move organically even without scrolling
+  gsap.to(".mesh-line", {
+    y: "+=20",
+    stagger: { each: 0.2, repeat: -1, yoyo: true },
+    duration: 3,
+    ease: "sine.inOut"
+  });
+
+  // This makes the mesh "dip" and "rise" based on scroll
+  gsap.to(".mesh-container", {
+    y: -100,
+    rotateX: 15,
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.5
+    }
+  });
+}, []);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden text-slate-100 font-sans bg-[#02040a]">
 
       {/* ===== SOVEREIGN BACKGROUND ===== */}
-      <div className="fixed inset-0 bg-[#02040a] z-0" />
-      <div className="fixed inset-0 opacity-40 blur-[120px] z-0 bg-[conic-gradient(from_180deg_at_50%_50%,rgba(99,102,241,0.15),rgba(168,85,247,0.15),rgba(236,72,153,0.15))]" />
+     <div className="fixed inset-0 bg-[#02040a] z-0" />
+
+{/* Animated Mesh Container */}
+<div className="fixed inset-0 z-0 pointer-events-none perspective-1000">
+  <div className="mesh-container w-full h-full opacity-30 origin-top transition-transform">
+    <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="50%" stopColor="#6366f1" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+      </defs>
+      
+      {/* Generating 10 horizontal "Data Threads" */}
+      {[...Array(12)].map((_, i) => (
+        <path
+          key={i}
+          className="mesh-line"
+          d={`M -200 ${100 + i * 80} Q 250 ${50 + i * 80} 500 ${100 + i * 80} T 1200 ${100 + i * 80}`}
+          fill="none"
+          stroke="url(#lineGrad)"
+          strokeWidth="1"
+        />
+      ))}
+    </svg>
+  </div>
+</div>
+
+{/* Focal Glow */}
+<div className="fixed inset-0 opacity-40 blur-[120px] z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent_70%)]" />
 
       {/* ELITE NAVIGATION BUTTONS */}
       <div className="fixed top-8 left-8 z-[100]">
@@ -114,17 +218,30 @@ export default function Brief() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-32 space-y-48">
 
         {/* HERO SECTION */}
-        <section className="text-center max-w-4xl mx-auto">
-          <span className="inline-block mb-8 px-6 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 backdrop-blur text-[10px] font-bold tracking-[0.4em] uppercase text-indigo-400 animate-pulse">
-            System Intelligence Briefing
-          </span>
-          <h1 className="text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.9] uppercase italic">
-            Why Businesses <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-500">Choose Loom-Link</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-slate-400 leading-relaxed font-light max-w-2xl mx-auto">
-            Secure, role-aware AI designed to <span className="text-white">simplify operations</span>, protect data, and help teams focus on the kingdom's growth.
-          </p>
-        </section>
+        <section ref={briefHeroRef} className="text-center max-w-4xl mx-auto">
+  <span 
+    ref={briefTagRef}
+    className="inline-block mb-8 px-6 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black tracking-[0.5em] uppercase"
+  >
+    Intelligence Architecture
+  </span>
+
+  <h1 
+    ref={briefTitleRef}
+    className="text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-none"
+  >
+    THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">BLUEPRINT</span> <br /> 
+    FOR ACTION.
+  </h1>
+
+  <p 
+    ref={briefDescRef}
+    className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl mx-auto"
+  >
+    Loom-Link isn't just a chat box. It is a sovereign orchestration layer 
+    designed to turn fragmented data into decisive executive motion.
+  </p>
+</section>
 
         {/* SECTION: MANAGERIAL LOGIC VS SIMPLE CHAT (From Image 0153fe & 0bc921) */}
         <section className="grid lg:grid-cols-2 gap-20 items-center">
@@ -211,7 +328,7 @@ export default function Brief() {
               <div className="absolute -inset-12 bg-indigo-600/20 blur-[60px] rounded-full animate-pulse group-hover:bg-indigo-600/40 transition-all duration-700" />
               <div className="relative bg-indigo-600 rounded-[3rem] px-12 py-10 border border-indigo-400 shadow-[0_0_80px_rgba(79,70,229,0.3)] text-center scale-110">
                 <FontAwesomeIcon icon={faMicrochip} className="text-5xl text-white mb-4" />
-                <h3 className="font-black tracking-[0.2em] text-sm uppercase">LOOM-LINK</h3>
+                <h3 className="font-black tracking-[0.2em] text-sm uppercase">LOOM-ENGINE</h3>
                 <p className="text-[9px] text-indigo-200 uppercase mt-2 font-bold italic">Operational Intelligence Core</p>
               </div>
             </div>
@@ -256,7 +373,7 @@ export default function Brief() {
         <footer className="text-center pt-20 pb-10">
           <div className="w-24 h-px bg-indigo-500/20 mx-auto mb-10" />
           <p className="text-slate-600 text-[10px] font-black uppercase tracking-[1em]">
-            Built for Sovereignty • Loom-Link v4.0
+            Built for Sovereignty • © 2026 LOOM-LINK
           </p>
         </footer>
 

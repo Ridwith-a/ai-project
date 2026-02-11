@@ -1,177 +1,264 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { 
+    Sun, Moon, Send, Mic, Plus, X, Activity, LogOut, 
+    AudioLines, PanelLeftOpen, PanelLeftClose 
+} from 'lucide-react';
 
 function Seehw() {
-  const [messages, setMessages] = useState([
-    { role: 'ai', content: "Hello! I'm your E-commerce assistant. Ask me about your sales, top products, or customer data." }
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const scrollRef = useRef(null);
-
-  const salesData = [
-    { day: 'Mon', amount: 2400 },
-    { day: 'Tue', amount: 1398 },
-    { day: 'Wed', amount: 9800 },
-    { day: 'Thu', amount: 3908 },
-    { day: 'Fri', amount: 4800 },
-    { day: 'Sat', amount: 3800 },
-    { day: 'Sun', amount: 4300 },
-  ];
-
-  const handleVoice = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-    const recognition = new SpeechRecognition();
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onresult = (event) => setInputValue(event.results[0][0].transcript);
-    recognition.start();
-  };
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, isTyping]);
-
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-
-    const userMsg = { role: 'user', content: inputValue };
-    setMessages(prev => [...prev, userMsg]);
-    setInputValue('');
-    setIsTyping(true);
+    const [isLight, setIsLight] = useState(() => localStorage.getItem('theme') === 'light');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024); 
+    const [messages, setMessages] = useState([
+        { role: 'ai', content: "SYSTEM ONLINE: Loom-Link Operational Core. Ready for data audit." }
+    ]);
+    const [inputValue, setInputValue] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const [isListening, setIsListening] = useState(false);
     
-    setTimeout(() => {
-      const response = getCommerceResponse(userMsg.content);
-      setMessages(prev => [...prev, { role: 'ai', ...response }]);
-      setIsTyping(false);
-    }, 1200);
-  };
+    const scrollRef = useRef(null);
+    const recognitionRef = useRef(null);
+    const silenceTimerRef = useRef(null);
 
-  const getCommerceResponse = (input) => {
-    const text = input.toLowerCase();
-    if (text.includes('sales') || text.includes('revenue')) {
-      return { content: "Here is your revenue flow. Wednesday saw a peak due to the flash sale.", showChart: true };
-    }
-    if (text.includes('customer')) return { content: "Top customers:\n1. Sarah Jenkins ($4,200)\n2. TechFlow Ltd ($3,850)\n3. Michael Chen ($3,100)" };
-    return { content: "I'm processing that. You can also ask for 'sales data' to see a chart." };
-  };
+    // Sync theme
+    useEffect(() => {
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }, [isLight]);
 
-  const resetChat = () => {
-    setMessages([{ role: 'ai', content: "New session started. How can I help with your store today?" }]);
-  };
+    // RESET SIDEBAR ON RESIZE: Fixes the "cannot open again" bug
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth > 1024) {
+                setIsSidebarOpen(true);
+            } else {
+                setIsSidebarOpen(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
-  return (
-    <>
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-      `}</style>
+    // Auto-scroll logic
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [messages, isTyping, isListening]);
 
-      <section className="relative min-h-screen flex overflow-hidden">
-        {/* BACKGROUND */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950" />
+    const handleVoice = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return;
+        if (isListening && recognitionRef.current) { recognitionRef.current.stop(); return; }
+        
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+        recognition.lang = 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        
+        recognition.onstart = () => setIsListening(true);
+        recognition.onresult = (event) => {
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+            let interimTranscript = '';
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+                else interimTranscript += event.results[i][0].transcript;
+            }
+            setInputValue(finalTranscript + interimTranscript);
+            silenceTimerRef.current = setTimeout(() => recognition.stop(), 2000);
+        };
+        recognition.onend = () => setIsListening(false);
+        recognition.onerror = () => setIsListening(false);
+        recognition.start();
+    };
 
-        {/* LEFT SIDEBAR */}
-        <aside className="relative z-20 w-64 bg-black/20 backdrop-blur-xl border-r border-white/10 p-6 flex flex-col gap-8">
-          <div className="flex items-center gap-3 px-2">
-             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white">L</div>
-             <span className="text-white font-bold tracking-tight">Loom-Link</span>
-          </div>
+    const handleSend = async (e) => {
+        if (e) e.preventDefault();
+        if (!inputValue.trim()) return;
+        if (recognitionRef.current) recognitionRef.current.stop();
 
-          <button 
-            onClick={resetChat}
-            className="w-full py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-200 text-sm hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-          >
-            <span className="text-lg">+</span> New Chat
-          </button>
+        const userMsg = { role: 'user', content: inputValue };
+        setMessages(prev => [...prev, userMsg]);
+        setInputValue('');
+        setIsTyping(true);
 
-          <div className="flex-1 flex flex-col gap-4">
-            <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold px-2">Recent Chats</h4>
-            <div className="flex flex-col gap-1">
-              {['Sales Analysis', 'Top 3 Customers', 'Inventory Check', 'Marketing ROI'].map((chat) => (
-                <button key={chat} className="text-left py-2 px-3 rounded-lg text-xs text-slate-400 hover:bg-white/5 hover:text-indigo-300 transition-colors">
-                  {chat}
-                </button>
-              ))}
-            </div>
-          </div>
+        try {
+            const response = await fetch("http://159.203.5.70:8081/api/v1/agents/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMsg.content }),
+            });
 
-          <Link to="/need-help" className="py-3 px-4 rounded-xl border border-indigo-500/30 text-indigo-300 text-xs text-center hover:bg-indigo-500/10 transition-all">
-            Need Help?
-          </Link>
-        </aside>
+            const contentType = response.headers.get("content-type");
+            let botReply = "";
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+                botReply = data.reply || data.message || JSON.stringify(data);
+            } else {
+                botReply = await response.text();
+            }
 
-        {/* MAIN CHAT AREA */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-50 mb-2">Meet Your AI Sales Analyst</h2>
-            <p className="text-slate-400 text-sm">Real-time store intelligence at your fingertips.</p>
-          </div>
+            setMessages(prev => [...prev, { role: 'ai', content: botReply }]);
+        } catch (error) {
+            setMessages(prev => [...prev, { role: 'ai', content: "ERROR: Failed to reach agent." }]);
+        } finally {
+            setIsTyping(false);
+        }
+    };
 
-          <div className="w-full max-w-2xl bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[550px]">
-            <div className="px-6 py-4 border-b border-white/10 text-xs text-slate-300 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-              <span>Loom-Link AI • LIVE</span>
-            </div>
-
-            <div ref={scrollRef} className="flex-1 p-6 space-y-5 overflow-y-auto custom-scrollbar">
-              {messages.map((msg, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider mb-1 text-slate-500 font-bold">
-                    {msg.role === 'user' ? 'ADMIN' : 'LOOM-LINK AI'}
-                  </span>
-                  <div className={`px-4 py-3 rounded-2xl max-w-[90%] text-sm ${
-                    msg.role === 'user' ? 'bg-indigo-600 text-white self-end' : 'bg-white/5 border border-white/10 text-indigo-50 self-start'
-                  }`}>
-                    {msg.content}
-                    {msg.showChart && (
-                      <div className="mt-4 h-40 w-full bg-black/20 rounded-xl p-3 border border-white/5">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={salesData}>
-                            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} dy={10} />
-                            <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                              {salesData.map((e, i) => <Cell key={i} fill={e.amount > 5000 ? '#818cf8' : '#312e81'} />)}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {isTyping && (
-                <div className="flex gap-1 items-center p-2 opacity-50">
-                   <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
-                   <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:0.2s]" />
-                </div>
-              )}
-            </div>
-
-            <form onSubmit={handleSend} className="p-4 bg-slate-900/50 border-t border-white/10 flex gap-2 items-center">
-              <div className="relative flex-1 flex items-center bg-white/5 border border-white/10 rounded-xl px-4">
-                <input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={isListening ? "Recording..." : "Ask your data..."}
-                  className="flex-1 bg-transparent py-3 text-sm text-slate-200 focus:outline-none"
+    return (
+        <div className={`flex h-screen w-full transition-colors duration-1000 overflow-hidden ${isLight ? 'bg-[#F5F5F7]' : 'bg-[#02040a]'}`}>
+            
+            {/* MOBILE OVERLAY */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/60 z-[110] lg:hidden backdrop-blur-md transition-opacity duration-300" 
+                    onClick={() => setIsSidebarOpen(false)} 
                 />
-                <button type="button" onClick={handleVoice} className={`p-2 ${isListening ? 'text-red-500 animate-pulse' : 'text-slate-400'}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            )}
+
+            {/* SIDEBAR: DRAWER STYLE */}
+            <aside 
+                className={`fixed lg:relative h-full transition-all duration-500 ease-in-out border-r flex flex-col z-[130] ${
+                    isSidebarOpen 
+                    ? 'w-[280px] p-6 translate-x-0 opacity-100' 
+                    : 'w-0 p-0 -translate-x-full lg:translate-x-0 opacity-0 border-none'
+                } ${isLight ? 'bg-white border-black/5' : 'bg-[#050505] border-white/5'}`}
+            >
+                <div className="flex items-center justify-between mb-8 overflow-hidden">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-[3px] h-6 group">
+                        {[0, 1, 2, 3, 4].map((i) => (
+                            <div
+                                key={i}
+                                className="w-[3px] bg-blue-600 rounded-full transition-all duration-300 group-hover:bg-white"
+                                style={{
+                                    height: `${[40, 70, 100, 60, 30][i]}%`,
+                                    animation: `wave 1.5s ease-in-out infinite ${i * 0.1}s`
+                                }}
+                            />
+                        ))}
+                        <style>{`
+                            @keyframes wave {
+                              0%, 100% { transform: scaleY(1); }
+                              50% { transform: scaleY(0.6); }
+                            }
+                        `}</style>
+                    </div>
+                        <span className={`font-black tracking-tighter uppercase text-xl whitespace-nowrap ${isLight ? 'text-black' : 'text-white'}`}>Loom-Link</span>
+                    </div>
+                    <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 opacity-50 hover:opacity-100 transition-opacity">
+                        <X size={20} className={isLight ? 'text-black' : 'text-white'} />
+                    </button>
+                </div>
+
+                <div className="flex flex-col gap-3 overflow-hidden">
+                    <div className="grid grid-cols-2 gap-2">
+                        <Link to="/" className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${isLight ? 'bg-black/5' : 'bg-white/5 text-white border-white/5 hover:bg-white/10'}`}>
+                            <LogOut size={16} /><span className="text-[10px] font-bold uppercase">Exit</span>
+                        </Link>
+                        <button onClick={() => setIsLight(!isLight)} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all ${isLight ? 'bg-black/5' : 'bg-white/5 text-white border-white/5 hover:bg-white/10'}`}>
+                            {isLight ? <Moon size={16} /> : <Sun size={16} />}<span className="text-[10px] font-bold uppercase">Theme</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button onClick={() => setMessages([{ role: 'ai', content: "SESSION_RESET." }])} className="w-full py-4 mt-4 rounded-2xl bg-blue-600 text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all shadow-lg shadow-blue-600/20 whitespace-nowrap overflow-hidden">
+                    + New Chat
                 </button>
-              </div>
-              <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
-            </form>
-          </div>
+
+                <div className="flex-1 mt-8 space-y-4 overflow-y-auto custom-scrollbar">
+                    <h4 className="text-[9px] font-black text-blue-500 uppercase tracking-widest px-1">History</h4>
+                    {['Sales_Audit', 'Client_Tiers', 'Stock_Check'].map((chat) => (
+                        <button key={chat} className={`w-full text-left py-3 px-4 rounded-xl text-xs font-mono truncate transition-all ${isLight ? 'text-black/40 hover:bg-black/5' : 'text-slate-500 hover:bg-white/5'}`}>
+                            {`// ${chat}`}
+                        </button>
+                    ))}
+                </div>
+            </aside>
+
+            {/* MAIN CONTENT AREA */}
+            <main className="flex-1 flex flex-col h-full relative overflow-hidden">
+                <header className="h-16 flex items-center px-4 md:px-8 shrink-0 z-50">
+                    <button 
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                        className={`p-2 rounded-xl transition-all hover:scale-110 ${isLight ? 'text-black hover:bg-black/5' : 'text-white hover:bg-white/5'}`}
+                    >
+                        {isSidebarOpen ? <PanelLeftClose size={24} /> : <PanelLeftOpen size={24} />}
+                    </button>
+                    <div className="ml-4 flex items-center gap-2">
+                         <Activity size={14} className="text-blue-500" />
+                         <span className="text-[10px] font-mono tracking-widest uppercase text-blue-500 font-bold">Loom-Link AI</span>
+                    </div>
+                </header>
+
+                {/* SCROLLABLE CHAT AREA */}
+                <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar px-4 md:px-8">
+                    <div className="max-w-4xl mx-auto py-12 space-y-12">
+                        {messages.map((msg, idx) => (
+                            <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                                <span className={`text-[9px] font-black mb-2 uppercase tracking-tighter ${isLight ? 'text-black/30' : 'text-white/20'}`}>
+                                    {msg.role === 'user' ? 'USER_ID' : 'SYSTEM_REPLY'}
+                                </span>
+                                <div className={`p-6 rounded-[2rem] max-w-[95%] text-sm leading-relaxed border transition-all ${
+                                    msg.role === 'user' 
+                                    ? 'bg-blue-600 text-white border-blue-500 shadow-xl shadow-blue-600/10' 
+                                    : isLight ? 'bg-white text-black border-black/5 shadow-sm' : 'bg-[#0d1117] border-white/10 text-blue-50'
+                                }`}>
+                                    <div className="markdown-container prose prose-invert max-w-none">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {msg.content}
+                                        </ReactMarkdown>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {isTyping && (
+                            <div className="px-4 text-blue-500 font-mono text-[10px] animate-pulse flex items-center gap-2">
+                                <AudioLines size={12} /> AGENT_THINKING...
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* FIXED INPUT FOOTER */}
+                <div className={`shrink-0 w-full px-4 pb-10 pt-4 ${isLight ? 'bg-[#F5F5F7]' : 'bg-[#02040a]'}`}>
+                    <form onSubmit={handleSend} className="max-w-4xl mx-auto">
+                        <div className={`flex gap-4 items-center p-3 rounded-[2rem] border transition-all ${isLight ? 'bg-white shadow-xl shadow-black/5' : 'bg-white/5 border-white/10'}`}>
+                            <input
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                placeholder="Audit revenue tiers or stock logs..."
+                                className={`flex-1 bg-transparent py-3 px-5 text-sm focus:outline-none ${isLight ? 'text-black' : 'text-white'}`}
+                            />
+                            <div className="flex items-center gap-2 pr-3">
+                                <button type="button" onClick={handleVoice} className={`p-3 rounded-full transition-all ${isListening ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-blue-400 hover:bg-blue-500/10'}`}>
+                                    <Mic size={20} />
+                                </button>
+                                <button type="submit" className="bg-blue-600 text-white p-3 rounded-full shadow-lg active:scale-90 hover:bg-blue-500 transition-all">
+                                    <Send size={20} />
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); border-radius: 10px; }
+                
+                /* NEAT TABLE RENDERING */
+                table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 1.5rem 0; border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 1rem; overflow: hidden; font-size: 0.85rem; }
+                th { background: rgba(59, 130, 246, 0.1); padding: 1rem; text-align: left; font-weight: 800; color: #3b82f6; border-bottom: 2px solid rgba(59, 130, 246, 0.2); }
+                td { padding: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-family: 'JetBrains Mono', monospace; }
+                tr:last-child td { border-bottom: none; }
+                tr:hover td { background: rgba(59, 130, 246, 0.05); }
+            `}</style>
         </div>
-      </section>
-    </>
-  )
+    );
 }
 
 export default Seehw;

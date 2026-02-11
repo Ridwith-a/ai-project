@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
 import {
     Shield, Zap, Cpu,
-    BarChart3, Terminal, Activity, ArrowRight
+    BarChart3, Terminal, Activity, ArrowRight, Sun, Moon
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -12,73 +12,109 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-const PersonaPanel = ({ num, title, desc, icon, tag }) => (
-    <section className="persona-panel w-screen h-screen flex-shrink-0 flex items-center justify-center px-20 relative overflow-hidden">
+/* ===============================
+   SUB-COMPONENTS (Theme Aware)
+================================ */
+
+const PersonaPanel = ({ num, title, desc, icon, tag, isLight }) => (
+    <section className="persona-panel w-screen h-screen flex-shrink-0 flex items-center justify-center px-10 md:px-20 relative overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full max-w-7xl items-center">
             <div className="space-y-8 relative z-10">
-                <div className="text-blue-500 font-mono text-xl tracking-[0.4em] font-black">{num} //</div>
-                <h2 className="text-[7vw] font-black tracking-tighter leading-none uppercase">{title}</h2>
-                <p className="text-white/30 text-2xl font-light leading-relaxed max-w-xl italic">"{desc}"</p>
+                <div className="text-blue-600 font-mono text-xl tracking-[0.4em] font-black">{num} //</div>
+                <h2 className="text-[12vw] lg:text-[7vw] font-black tracking-tighter leading-none uppercase">{title}</h2>
+                <p className={`text-xl md:text-2xl font-light leading-relaxed max-w-xl italic transition-colors duration-700 ${isLight ? 'text-black/60' : 'text-white/30'}`}>
+                    "{desc}"
+                </p>
             </div>
             <div className="relative flex justify-center items-center">
                 <div className="absolute w-64 h-64 bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
                 <motion.div
                     animate={{ y: [-15, 15, -15], opacity: [0.4, 0.7, 0.4] }}
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative z-10"
+                    className="relative z-10 scale-75 md:scale-100"
                 >
                     {icon}
                 </motion.div>
-                <div className="absolute bottom-0 right-10 border border-white/10 px-4 py-2 bg-black/50 backdrop-blur-md">
-                    <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase">{tag}</span>
+                <div className={`absolute bottom-0 right-0 md:right-10 border px-4 py-2 backdrop-blur-md transition-all duration-700 ${isLight ? 'border-black/10 bg-white/50' : 'border-white/10 bg-black/50'}`}>
+                    <span className={`text-[10px] font-mono tracking-[0.3em] uppercase transition-colors duration-700 ${isLight ? 'text-black/40' : 'text-white/40'}`}>{tag}</span>
                 </div>
             </div>
         </div>
     </section>
 );
 
-const ValueCard = ({ icon, title, desc }) => (
-    <div className="p-16 rounded-[3.5rem] bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all duration-700">
-        <div className="text-blue-500 mb-10">{icon}</div>
-        <h4 className="text-3xl font-bold mb-6 tracking-tight">{title}</h4>
-        <p className="text-white/30 text-lg leading-relaxed font-light">{desc}</p>
+const ValueCard = ({ icon, title, desc, isLight }) => (
+    <div className={`p-10 md:p-16 rounded-[2.5rem] md:rounded-[3.5rem] border transition-all duration-700 ${isLight ? 'bg-black/[0.03] border-black/5 hover:border-blue-600/30' : 'bg-white/[0.02] border-white/5 hover:border-blue-500/30'}`}>
+        <div className="text-blue-600 mb-6 md:mb-10">{icon}</div>
+        <h4 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 tracking-tight uppercase">{title}</h4>
+        <p className={`text-base md:text-lg leading-relaxed font-light transition-colors duration-700 ${isLight ? 'text-black/40' : 'text-white/30'}`}>{desc}</p>
     </div>
 );
 
+const PillarCard = ({ icon, title, desc, command, isLight }) => (
+    <div className={`p-12 md:p-20 group transition-all duration-700 border-r border-b ${isLight ? 'bg-[#F5F5F7] hover:bg-white border-black/5' : 'bg-black hover:bg-blue-600/5 border-white/10'}`}>
+        <div className="text-blue-600 mb-8 group-hover:scale-110 transition-transform duration-500">{icon}</div>
+        <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight">{title}</h3>
+        <p className={`text-lg leading-relaxed mb-10 transition-colors duration-700 ${isLight ? 'text-black/50' : 'text-white/40'}`}>{desc}</p>
+        <div className={`font-mono text-[10px] p-4 border transition-all duration-700 ${isLight ? 'bg-black/5 border-black/10 text-black/40' : 'bg-blue-500/5 border-blue-500/10 text-blue-500/50'}`}>
+            {command}
+        </div>
+    </div>
+);
+
+/* ===============================
+   MAIN COMPONENT
+================================ */
+
 const LoomLinkFinal = () => {
+    const [isLight, setIsLight] = useState(() => {
+        return localStorage.getItem('theme') === 'light';
+    });
+
+    // 2. Save to localStorage whenever the theme changes
+    useEffect(() => {
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }, [isLight]);
     const mainRef = useRef(null);
     const horizontalRef = useRef(null);
     const bgTextRef = useRef(null);
     const navRef = useRef(null);
-
-    // HERO REFS FOR ANIMATION
     const heroTitleRef = useRef(null);
     const heroDescRef = useRef(null);
     const heroGlowRef = useRef(null);
 
     useEffect(() => {
         let ctx = gsap.context(() => {
-
-            // 1. HERO ENTRY ANIMATION
             const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
+            heroTl.fromTo(heroGlowRef.current, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 2.2, ease: "expo.out" })
+                .from(heroTitleRef.current, { y: 140, skewY: 8, opacity: 0, duration: 1.6 }, "-=1.8")
+                .from(heroDescRef.current, { y: 30, opacity: 0, duration: 1.2 }, "-=1.0");
 
-            heroTl.fromTo(heroGlowRef.current,
-                { scale: 0.4, opacity: 0 },
-                { scale: 1, opacity: 1, duration: 2.2, ease: "expo.out" }
-            )
-                .from(heroTitleRef.current, {
-                    y: 140,
-                    skewY: 8,
-                    opacity: 0,
-                    duration: 1.6,
-                }, "-=1.8")
-                .from(heroDescRef.current, {
-                    y: 30,
-                    opacity: 0,
-                    duration: 1.2,
-                }, "-=1.0");
+            gsap.to(bgTextRef.current, {
+                xPercent: -45,
+                yPercent: 12,
+                scrollTrigger: {
+                    trigger: mainRef.current,
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1,
+                    invalidateOnRefresh: true,
+                }
+            });
 
-            // 2. SMART NAVBAR
+            const panels = gsap.utils.toArray(".persona-panel");
+            gsap.to(panels, {
+                xPercent: -100 * (panels.length - 1),
+                ease: "none",
+                scrollTrigger: {
+                    trigger: horizontalRef.current,
+                    pin: true,
+                    scrub: 1,
+                    end: () => "+=" + horizontalRef.current.scrollWidth,
+                    invalidateOnRefresh: true,
+                }
+            });
+
             const showAnim = gsap.from(navRef.current, {
                 yPercent: -100,
                 paused: true,
@@ -94,34 +130,6 @@ const LoomLinkFinal = () => {
                 }
             });
 
-            // 3. MOVING BACKGROUND
-            gsap.to(bgTextRef.current, {
-                xPercent: -45,
-                yPercent: 12,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: mainRef.current,
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1,
-                    invalidateOnRefresh: true,
-                }
-            });
-
-            // 4. HORIZONTAL PERSONA WARP
-            const panels = gsap.utils.toArray(".persona-panel");
-            gsap.to(panels, {
-                xPercent: -100 * (panels.length - 1),
-                ease: "none",
-                scrollTrigger: {
-                    trigger: horizontalRef.current,
-                    pin: true,
-                    scrub: 1,
-                    end: () => "+=" + horizontalRef.current.scrollWidth,
-                    invalidateOnRefresh: true,
-                }
-            });
-
             ScrollTrigger.refresh();
         }, mainRef);
 
@@ -129,23 +137,24 @@ const LoomLinkFinal = () => {
     }, []);
 
     return (
-        <div ref={mainRef} className="bg-[#020202] text-[#F5F5F7] selection:bg-blue-600 font-sans overflow-x-hidden antialiased">
+        <div ref={mainRef} className={`transition-colors duration-1000 font-sans overflow-x-hidden antialiased selection:bg-blue-600 ${
+            isLight ? 'bg-[#F5F5F7] text-[#1D1D1F]' : 'bg-[#020202] text-[#F5F5F7]'
+        }`}>
 
-            {/* BACKGROUND MONOLITH */}
             <div className="md:ps-210 ps-80 fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-                <div
-                    ref={bgTextRef}
-                    className="text-[35vw] font-black tracking-tighter text-white/[0.09] leading-none select-none italic whitespace-nowrap"
-                    style={{ willChange: 'transform' }}
-                >
+                <div ref={bgTextRef} className={`text-[35vw] font-black tracking-tighter leading-none select-none italic whitespace-nowrap transition-colors duration-1000 ${
+                    isLight ? 'text-black/[0.09]' : 'text-white/[0.09]'
+                }`}>
                     LOOM-LINK
                 </div>
             </div>
 
-            {/* NAV */}
-            <nav ref={navRef} className="fixed top-0 w-full z-[200] flex justify-between items-center px-12 py-10 backdrop-blur-md bg-black/10 border-b border-white/5">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-[3px] h-6 group">
+            {/* RESPONSIVE NAV */}
+            <nav ref={navRef} className={`fixed top-0 w-full z-[200] flex justify-between items-center px-6 md:px-12 py-6 md:py-8 backdrop-blur-md border-b transition-all duration-700 ${
+                isLight ? 'bg-white/70 border-black/5' : 'bg-black/10 border-white/5'
+            }`}>
+                <div className="flex items-center gap-3 md:gap-4">
+                     <div className="flex items-center gap-[3px] h-6 group">
                         {[0, 1, 2, 3, 4].map((i) => (
                             <div
                                 key={i}
@@ -163,163 +172,117 @@ const LoomLinkFinal = () => {
                             }
                         `}</style>
                     </div>
-                    <span className="text-xl font-black tracking-tighter uppercase ">Loom-Link</span>
+                    <span className="text-lg md:text-xl font-black tracking-tighter uppercase">Loom-Link</span>
                 </div>
-                <button className="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">
-                    Try Demo
-                </button>
+                
+                <div className="flex items-center gap-3 md:gap-6">
+                    <button 
+                        onClick={() => setIsLight(!isLight)}
+                        className={`p-2.5 md:p-3 rounded-full border transition-all duration-500 flex items-center justify-center ${
+                            isLight ? 'bg-black text-white border-black/10' : 'bg-white text-black border-white/10'
+                        }`}
+                    >
+                        {isLight ? <Moon size={16} /> : <Sun size={16} />}
+                    </button>
+                    <button className={`px-4 md:px-6 py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
+                        isLight ? 'bg-black text-white' : 'bg-white text-black hover:bg-blue-600 hover:text-white'
+                    }`}>
+                        Try Demo
+                    </button>
+                </div>
             </nav>
 
-            {/* HERO SECTION */}
+            {/* HERO */}
             <section className="h-screen flex flex-col items-center justify-center text-center px-6 relative z-10">
-                <div
-                    ref={heroGlowRef}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 blur-[150px] rounded-full"
-                />
-                <div className="overflow-hidden mb-8">
-                    <h1
-                        ref={heroTitleRef}
-                        className="text-[14vw] md:text-[11rem] font-bold tracking-tighter leading-[0.8]"
-                    >
-                        OWN YOUR <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-700">
-                            INSIGHTS !
-                        </span>
-                    </h1>
-                </div>
-                <p
-                    ref={heroDescRef}
-                    className="max-w-2xl mx-auto text-white/40 text-lg md:text-2xl font-light"
-                >
+                <div ref={heroGlowRef} className="absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[150px] rounded-full" />
+                <h1 ref={heroTitleRef} className="text-[16vw] md:text-[11rem] font-bold tracking-tighter leading-[0.8] uppercase">
+                    OWN YOUR <br />
+                    <span className={`text-transparent bg-clip-text bg-gradient-to-b ${isLight ? 'from-blue-600 to-blue-900' : 'from-white to-neutral-700'}`}>
+                        INSIGHTS !
+                    </span>
+                </h1>
+                <p ref={heroDescRef} className={`max-w-xl mx-auto mt-8 text-base md:text-2xl font-light italic transition-colors duration-700 ${isLight ? 'text-black/40' : 'text-white/40'}`}>
                     An AI assistant that turns your data into clear, instant decisions.
                 </p>
             </section>
 
-            {/* HORIZONTAL PERSONAS */}
-            <div ref={horizontalRef} className="flex flex-nowrap overflow-hidden bg-black border-y border-white/5 relative z-10 opacity-65">
-                <PersonaPanel num="01" title="Executive" desc="High-level summaries and proactive visualizations for rapid decisioning." icon={<BarChart3 size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Decision_Engine" />
-                <PersonaPanel num="02" title="Manager" desc="Automate team reporting and export detailed customer insights instantly." icon={<Activity size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Ops_Optimization" />
-                <PersonaPanel num="03" title="Analyst" desc="Accelerate deep-dives. Audit AI logic layers to ensure mathematical precision." icon={<Terminal size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Logic_Kernel" />
+            {/* PERSONAS */}
+            <div ref={horizontalRef} className={`flex flex-nowrap overflow-hidden border-y transition-colors duration-1000 relative z-10 ${
+                isLight ? 'bg-white/50 border-black/5' : 'bg-black/50 border-white/5'
+            }`}>
+                <PersonaPanel isLight={isLight} num="01" title="Executive" desc="High-level summaries and proactive visualizations." icon={<BarChart3 size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Decision_Engine" />
+                <PersonaPanel isLight={isLight} num="02" title="Manager" desc="Automate team reporting and export insights instantly." icon={<Activity size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Ops_Optimization" />
+                <PersonaPanel isLight={isLight} num="03" title="Analyst" desc="Audit AI logic layers to ensure mathematical precision." icon={<Terminal size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Logic_Kernel" />
             </div>
 
             {/* TERMINAL SECTION */}
-            <section className="py-40 px-6 flex flex-col items-center relative z-10">
-                <div className="w-full max-w-5xl bg-[#080808]/80 backdrop-blur-xl border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl">
-                    <div className="px-10 py-6 border-b border-white/5 flex justify-between items-center bg-black/40 text-[10px] font-mono tracking-widest text-white/40">
+            <section className="py-20 md:py-40 px-4 md:px-6 flex flex-col items-center relative z-10">
+                <div className={`w-full max-w-5xl backdrop-blur-xl border rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-700 ${
+                    isLight ? 'bg-white/80 border-black/10' : 'bg-[#080808]/80 border-white/10'
+                }`}>
+                    <div className={`px-6 md:px-10 py-4 md:py-6 border-b flex justify-between items-center text-[9px] md:text-[10px] font-mono tracking-widest ${
+                        isLight ? 'bg-black/5 border-black/5 text-black/40' : 'bg-black/40 border-white/5 text-white/40'
+                    }`}>
                         <span>LoomLink_Terminal // AI_CHAT_BRIDGE</span>
-                        <span className="text-blue-500">Node: NVIDIA_L40S</span>
+                        <span className="text-blue-600">Node: NVIDIA_L40S</span>
                     </div>
-
-                    <div className="p-12 md:p-32 flex flex-col items-center text-center space-y-10">
-                        <div className="space-y-6">
-                            <h3 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9]">
-                                The future of <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-b from-blue-500 to-indigo-500">
-                                    Data Conversation.
-                                </span>
-                            </h3>
-                            <p className="max-w-xl mx-auto text-white/40 text-lg md:text-xl font-light italic">
-                                "Our AI chat bridge transforms complex SQL clusters into human-readable executive intelligence in milliseconds."
-                            </p>
-                        </div>
-
+                    <div className="p-10 md:p-32 flex flex-col items-center text-center space-y-8 md:space-y-10">
+                        <h3 className="text-3xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9]">
+                            The future of <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Data Conversation.</span>
+                        </h3>
+                        <p className={`max-w-xl mx-auto text-base md:text-xl font-light italic transition-colors duration-700 ${isLight ? 'text-black/60' : 'text-white/40'}`}>
+                            "Our AI chat bridge transforms complex SQL clusters into human-readable executive intelligence in milliseconds."
+                        </p>
                         <Link to="/how-it-works">
-                            <button className="group relative flex items-center gap-6 px-12 py-6 bg-white text-black rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-blue-600 hover:text-white transition-all duration-500 shadow-xl">
-                                See how it works
-                                <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                            <button className={`group flex items-center gap-4 md:gap-6 px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm transition-all duration-500 ${
+                                isLight ? 'bg-black text-white hover:bg-blue-600' : 'bg-white text-black hover:bg-blue-600 hover:text-white'
+                            }`}>
+                                See how it works <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                             </button>
                         </Link>
-
-                        <div className="pt-10 flex gap-8 items-center opacity-30">
-                            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em]">
-                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                                AI Chat Active
-                            </div>
-                            <div className="w-[1px] h-4 bg-white/20" />
-                            <div className="text-[10px] font-mono uppercase tracking-[0.2em]">
-                                Latency: 12ms
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
 
             {/* VALUE GRID */}
-            <section className="py-40 px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                <ValueCard icon={<Shield />} title="Sovereign" desc="Runs entirely on-premise. Sensitive data never leaves your network." />
-                <ValueCard icon={<Zap />} title="Real-Time" desc="Semantic Caching delivers repeat insights in under 12ms." />
-                <ValueCard icon={<Activity />} title="Proactive" desc="Automatically generates charts and drafts reports on trend detection." />
+            <section className="py-20 md:py-40 px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                <ValueCard isLight={isLight} icon={<Shield />} title="Sovereign" desc="Runs entirely on-premise. Sensitive data never leaves your network." />
+                <ValueCard isLight={isLight} icon={<Zap />} title="Real-Time" desc="Semantic Caching delivers repeat insights in under 12ms." />
+                <ValueCard isLight={isLight} icon={<Activity />} title="Proactive" desc="Automatically generates charts and drafts reports on trend detection." />
             </section>
 
             {/* PILLARS */}
-            <section className="py-40 px-6 relative z-10 max-w-7xl mx-auto">
-                <div className="flex flex-col mb-20">
-                    <div className="flex items-center gap-4 text-blue-500 font-mono text-sm tracking-[0.5em] uppercase mb-4">
-                        <div className="w-12 h-[1px] bg-blue-500" /> Core Capabilities
+            <section className="py-20 md:py-40 px-6 relative z-10 max-w-7xl mx-auto">
+                <div className="flex flex-col mb-16 md:mb-20">
+                    <div className="flex items-center gap-4 text-blue-600 font-mono text-sm tracking-[0.5em] uppercase mb-4">
+                        <div className="w-12 h-[1px] bg-blue-600" /> Core Capabilities
                     </div>
-                    <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.9]">Engineered for <br /> <span className="text-white/20">Sovereign Action.</span></h2>
+                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-[0.9]">
+                        Engineered for <br /> <span className={isLight ? 'text-black/20' : 'text-white/20'}>Sovereign Action.</span>
+                    </h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-white/10 border border-white/10">
-                    <div className="bg-black p-12 md:p-20 group hover:bg-blue-600/5 transition-colors">
-                        <div className="text-blue-500 mb-8"><Terminal size={40} /></div>
-                        <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight">Natural Language to Insight</h3>
-                        <p className="text-white/40 text-lg leading-relaxed mb-10">Convert conversational prompts like <span className="text-white italic">"Which movies peaked in May?"</span> into precise SQL logic and data results instantly.</p>
-                        <div className="font-mono text-[10px] text-blue-500/50 bg-blue-500/5 p-4 border border-blue-500/10">EXECUTING: NL_QUERY_SYNTHESIS // MODEL: LLAMA_3_PRO_70B</div>
-                    </div>
-                    <div className="bg-black p-12 md:p-20 group hover:bg-blue-600/5 transition-colors">
-                        <div className="text-blue-500 mb-8"><Zap size={40} /></div>
-                        <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight">The "LoomLink" Action Rule</h3>
-                        <p className="text-white/40 text-lg leading-relaxed mb-10">Beyond chat. An autonomous agent that analyzes, calculates, and drafts executive emails or Slack reports without human intervention.</p>
-                    </div>
-                    <div className="bg-black p-12 md:p-20 group hover:bg-blue-600/5 transition-colors">
-                        <div className="text-blue-500 mb-8"><Cpu size={40} /></div>
-                        <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight">Smart Semantic Caching</h3>
-                        <p className="text-white/40 text-lg leading-relaxed mb-10">
-                            High-speed performance powered by <span className="text-white">intelligent caching</span>.
-                            Repeated insights are served in under 12ms through our optimized retrieval engine.
-                        </p>
-                    </div>
-                    <div className="bg-black p-12 md:p-20 group hover:bg-blue-600/5 transition-colors">
-                        <div className="text-blue-500 mb-8"><BarChart3 size={40} /></div>
-                        <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight">Proactive Visualizations</h3>
-                        <p className="text-white/40 text-lg leading-relaxed mb-10">Automated charts and trend mappings that materialize the moment your data supports a comparison.</p>
-                    </div>
+                <div className={`grid grid-cols-1 md:grid-cols-2 border-t border-l transition-colors duration-700 ${isLight ? 'border-black/5 opacity-80' : 'border-white/10 '}`}>
+                    <PillarCard isLight={isLight} icon={<Terminal size={40} />} title="Natural Language to Insight
+" desc="Convert prompts to precise SQL logic and results instantly." command="EXECUTING: NL_QUERY_SYNTHESIS" />
+                    <PillarCard isLight={isLight} icon={<Zap size={40} />} title="The Loom-Link Action Rule" desc="Autonomous agent that analyzes and drafts executive reports." command="STATUS: AGENT_ACTIVE" />
+                    <PillarCard isLight={isLight} icon={<Cpu size={40} />} title="Semantic Caching" desc="High-speed performance powered by intelligent retrieval." command="LATENCY: 12MS" />
+                    <PillarCard isLight={isLight} icon={<BarChart3 size={40} />} title="Proactive Visuals" desc="Charts that materialize the moment data supports it." command="MODE: RENDER_DYNAMO" />
                 </div>
             </section>
 
             {/* FOOTER */}
-            <footer className="pt-60 pb-20 relative z-10 border-t border-white/5 bg-black/20">
-                <div className="max-w-7xl mx-auto px-12">
-                    {/* Main Branding */}
-                    <div className="text-center mb-40">
-                        <h2 className="text-[15vw] font-bold tracking-tighter leading-none mb-10 opacity-60 uppercase select-none">
-                            LOOM-LINK
-                        </h2>
-                        <Link to={'/brief'}>
-                            <button className="bg-white text-black px-16 py-6 rounded-full font-black text-xl hover:bg-blue-600 hover:text-white transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                                Brief About Us
-                            </button>
-                        </Link>
-                    </div>
-
-                    {/* Bottom Bar: Copyright & System Status */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-8 pt-10 border-t border-white/5 font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase">
-                        <div className="flex items-center gap-6">
-                            <span>© 2026 LOOM-LINK </span>
-                            <div className="hidden md:block w-[1px] h-3 bg-white/10" />
-                            <span className="hover:text-blue-500 cursor-pointer transition-colors">Privacy_Protocol</span>
-                            <span className="hover:text-blue-500 cursor-pointer transition-colors">Terms_of_Service</span>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                                <span className="text-blue-500/80">System_Status: Operational</span>
-                            </div>
-                            <div className="hidden md:block w-[1px] h-3 bg-white/10" />
-                            <span>v1.0.4_Stable</span>
-                        </div>
-                    </div>
+            <footer className={`pt-40 md:pt-60 pb-20 relative z-10 border-t transition-all duration-1000 ${isLight ? 'bg-white opacity-60 border-black/5' : 'bg-black/20 border-white/5'}`}>
+                <div className="max-w-7xl mx-auto px-12 text-center">
+                    <h2 className={`text-[15vw] font-bold tracking-tighter leading-none mb-10 uppercase select-none transition-all duration-700 ${
+                        isLight ? 'text-black/80' : 'text-white/60'
+                    }`}>
+                        LOOM-LINK
+                    </h2>
+                    <Link to="/brief">
+                        <button className="px-10 md:px-16 py-4 md:py-6 rounded-full font-black text-lg md:text-xl transition-all duration-500 shadow-2xl bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 active:scale-95">
+                            Brief About Us
+                        </button>
+                    </Link>
                 </div>
             </footer>
         </div>

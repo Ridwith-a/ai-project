@@ -4,3 +4,39 @@
 .mesh-container {
   transform: rotateX(20deg) scale(1.2);
 }
+
+
+/* SYSTEM STATUS TICKER ANIMATION */
+.animate-marquee {
+    display: inline-block;
+    animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+    0% { 
+        transform: translateX(0); 
+    }
+    100% { 
+        transform: translateX(-50%); 
+    }
+}
+
+
+/* brief horizontal */
+
+.horizontal-section {
+    background-color: #02040a; /* Matches your Seehw.jsx dark theme */
+}
+
+.horizontal-text {
+    display: inline-block;
+    padding-left: 100vw; /* Starts the text off-screen to the right */
+    font-size: clamp(2rem, 8vw, 10rem);
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+    /* Optional: Subtle glow to match the Loom-Link vibe */
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}

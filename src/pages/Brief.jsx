@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useGSAP } from "@gsap/react";
 import {
   faUsersGear,
   faCubes,
@@ -18,17 +19,19 @@ import {
   faSun,
   faMoon
 } from "@fortawesome/free-solid-svg-icons";
+import { ChevronLeft, Moon, Sun } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
+
+
 
 /* ===============================
    SUB-COMPONENTS
 ================================ */
 function FeatureCard({ icon, title, text, isLight }) {
   return (
-    <div className={`border rounded-3xl p-8 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-500 group ${
-      isLight ? 'bg-black/[0.03] border-black/5 shadow-sm' : 'bg-white/5 border-white/10'
-    }`}>
+    <div className={`border rounded-3xl p-8 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-500 group ${isLight ? 'bg-black/[0.03] border-black/5 shadow-sm' : 'bg-white/5 border-white/10'
+      }`}>
       <FontAwesomeIcon icon={icon} className="text-indigo-500 text-3xl mb-4 group-hover:scale-110 transition-transform" />
       <h3 className={`text-xl font-semibold mb-3 ${isLight ? 'text-[#1D1D1F]' : 'text-white'}`}>{title}</h3>
       <p className={`text-sm leading-relaxed ${isLight ? 'text-black/60' : 'text-slate-300'}`}>{text}</p>
@@ -38,9 +41,8 @@ function FeatureCard({ icon, title, text, isLight }) {
 
 function ComparisonTable({ isLight }) {
   return (
-    <div className={`overflow-hidden rounded-3xl border backdrop-blur-xl ${
-      isLight ? 'bg-white border-black/5 shadow-lg' : 'bg-white/5 border-white/10'
-    }`}>
+    <div className={`overflow-hidden rounded-3xl border backdrop-blur-xl ${isLight ? 'bg-white border-black/5 shadow-lg' : 'bg-white/5 border-white/10'
+      }`}>
       <table className="w-full text-left text-sm">
         <thead className={`${isLight ? 'bg-black/[0.02] text-indigo-600' : 'bg-white/10 text-indigo-300'}`}>
           <tr>
@@ -71,9 +73,8 @@ function FlowStep({ icon, title, label, isLight }) {
   return (
     <div className="flex flex-col items-center group">
       <div className={`w-20 h-20 rounded-2xl border flex items-center justify-center mb-4 
-                      group-hover:border-indigo-500/50 transition-colors duration-500 shadow-lg ${
-                        isLight ? 'bg-white border-black/10 shadow-indigo-500/5' : 'bg-white/5 border-white/10'
-                      }`}>
+                      group-hover:border-indigo-500/50 transition-colors duration-500 shadow-lg ${isLight ? 'bg-white border-black/10 shadow-indigo-500/5' : 'bg-white/5 border-white/10'
+        }`}>
         <FontAwesomeIcon icon={icon} className="text-2xl text-indigo-500" />
       </div>
       <h4 className={`font-semibold text-sm ${isLight ? 'text-black' : 'text-white'}`}>{title}</h4>
@@ -86,15 +87,15 @@ function FlowStep({ icon, title, label, isLight }) {
    MAIN PAGE COMPONENT
 ================================ */
 export default function Brief() {
- const [isLight, setIsLight] = useState(() => {
-        return localStorage.getItem('theme') === 'light';
-    });
+  const [isLight, setIsLight] = useState(() => {
+    return localStorage.getItem('theme') === 'light';
+  });
 
-    // 2. Sync changes to localStorage
-    useEffect(() => {
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    }, [isLight]);
-    
+  // 2. Sync changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }, [isLight]);
+
   const [showScroll, setShowScroll] = useState(false);
   const navRef = useRef(null);
 
@@ -117,20 +118,20 @@ export default function Brief() {
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.fromTo(briefTagRef.current, 
-      { opacity: 0, y: 10, letterSpacing: "1.5em" }, 
+    tl.fromTo(briefTagRef.current,
+      { opacity: 0, y: 10, letterSpacing: "1.5em" },
       { opacity: 1, y: 0, letterSpacing: "0.5em", duration: 1.5 }
     )
-    .fromTo(briefTitleRef.current, 
-      { opacity: 0, filter: "blur(20px)", scale: 0.9, y: 20 }, 
-      { opacity: 1, filter: "blur(0px)", scale: 1, y: 0, duration: 1.2 }, 
-      "-=0.8"
-    )
-    .fromTo(briefDescRef.current, 
-      { opacity: 0, y: 20 }, 
-      { opacity: 1, y: 0, duration: 1 }, 
-      "-=0.5"
-    );
+      .fromTo(briefTitleRef.current,
+        { opacity: 0, filter: "blur(20px)", scale: 0.9, y: 20 },
+        { opacity: 1, filter: "blur(0px)", scale: 1, y: 0, duration: 1.2 },
+        "-=0.8"
+      )
+      .fromTo(briefDescRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1 },
+        "-=0.5"
+      );
 
     gsap.to(".mesh-line", {
       y: "+=20",
@@ -150,7 +151,7 @@ export default function Brief() {
       }
     });
 
-    const showAnim = gsap.from(navRef.current, { 
+    const showAnim = gsap.from(navRef.current, {
       yPercent: -150,
       paused: true,
       duration: 0.4,
@@ -166,13 +167,52 @@ export default function Brief() {
     });
   }, []);
 
+  const sectionRef = useRef(null);
+    const textRef = useRef(null);
+
+    useGSAP(() => {
+    // 1. Setup the Horizontal Scroll
+    const scrollTween = gsap.to(textRef.current, {
+        xPercent: -100,
+        x: "100vw", // Offsets the initial padding
+        ease: "none",
+        scrollTrigger: {
+            trigger: sectionRef.current,
+            pin: true,
+            scrub: 1,
+            // Dynamic end based on text width for smoother feel
+            end: () => `+=${textRef.current.offsetWidth}`, 
+        }
+    });
+
+    // 2. Select the manually created spans
+    const chars = textRef.current.querySelectorAll('.char');
+
+    // 3. Apply the per-character animation
+    chars.forEach((char) => {
+        gsap.from(char, {
+            yPercent: gsap.utils.random(-200, 200),
+            rotation: gsap.utils.random(-30, 30),
+            opacity: 0,
+            scale: 0.5,
+            ease: "back.out(1.5)",
+            scrollTrigger: {
+                trigger: char,
+                containerAnimation: scrollTween, // Essential for horizontal triggers
+                start: "left 95%",
+                end: "left 60%",
+                scrub: 1,
+            }
+        });
+    });
+}, { scope: sectionRef });
+
   return (
-    <div className={`relative min-h-screen overflow-x-hidden font-sans transition-colors duration-1000 ${
-      isLight ? 'bg-[#F5F5F7] text-[#1D1D1F]' : 'bg-[#02040a] text-slate-100'
-    }`}>
+    <div className={`relative min-h-screen overflow-x-hidden font-sans transition-colors duration-1000 ${isLight ? 'bg-[#F5F5F7] text-[#1D1D1F]' : 'bg-[#02040a] text-slate-100'
+      }`}>
 
       <div className={`fixed inset-0 z-0 transition-colors duration-1000 ${isLight ? 'bg-[#F5F5F7]' : 'bg-[#02040a]'}`} />
-      
+
       <div className="fixed inset-0 z-0 pointer-events-none perspective-1000">
         <div className={`mesh-container w-full h-full origin-top transition-all duration-1000 ${isLight ? 'opacity-40' : 'opacity-30'}`}>
           <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
@@ -198,27 +238,65 @@ export default function Brief() {
         </div>
       </div>
 
-      <div ref={navRef} className="fixed top-8 left-8 z-[100] flex gap-4 pointer-events-none">
-        <div className="flex gap-3 pointer-events-auto">
-          <Link to="/" className={`group flex items-center gap-3 px-6 py-3 rounded-full border backdrop-blur-xl transition-all duration-300 shadow-2xl ${
-            isLight ? 'bg-white/80 border-black/10 hover:bg-white text-black' : 'bg-white/5 border-white/10 hover:bg-white/10 text-white'
-          }`}>
-            <FontAwesomeIcon icon={faChevronLeft} className="text-xs group-hover:-translate-x-1 transition-transform" />
-            <span className="text-[10px] font-black tracking-[0.2em] uppercase">Back</span>
+      <header className={`relative z-[100] h-20 md:h-18 flex items-center justify-between px-6 md:px-12 border-b backdrop-blur-md transition-all duration-700 ${isLight ? 'bg-white/70 border-black/5' : 'bg-black/20 border-white/5'
+        }`}>
+        {/* LEFT COLUMN: NAVIGATION */}
+        <div className="flex-1 flex justify-start">
+          <Link to="/">
+            <button className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 group ${isLight
+                ? 'border-black/10 bg-black/5 hover:bg-black/10 text-black'
+                : 'border-white/10 bg-white/5 hover:bg-white/10 text-white'
+              }`}>
+              <ChevronLeft size={16} className="text-blue-500 group-hover:-translate-x-1 transition-transform" />
+              <span className="hidden md:inline text-[10px] font-black uppercase tracking-[0.2em]">Back</span>
+            </button>
           </Link>
-          
-          <button 
+        </div>
+
+        {/* CENTER COLUMN: LOGO */}
+        <div className="flex-1 flex justify-center">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-[3px] h-6 group">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="w-[3px] bg-blue-600 rounded-full transition-all duration-300 group-hover:bg-white"
+                  style={{
+                    height: `${[40, 70, 100, 60, 30][i]}%`,
+                    animation: `wave 1.5s ease-in-out infinite ${i * 0.1}s`
+                  }}
+                />
+              ))}
+              <style>{`
+                            @keyframes wave {
+                              0%, 100% { transform: scaleY(1); }
+                              50% { transform: scaleY(0.6); }
+                            }
+                        `}</style>
+            </div>
+            <span className={`text-xl md:text-2xl font-black tracking-tighter uppercase whitespace-nowrap ${isLight ? 'text-black' : 'text-white'
+              }`}>
+              Loom-Link
+            </span>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: THEME TOGGLE */}
+        <div className="flex-1 flex justify-end">
+          <button
             onClick={() => setIsLight(!isLight)}
-            className={`flex items-center justify-center w-12 h-12 rounded-full border backdrop-blur-xl transition-all duration-500 shadow-2xl ${
-              isLight ? 'bg-black text-white border-black/10' : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
-            }`}
+            className={`flex items-center gap-3 px-4 py-2 rounded-xl border transition-all duration-500 ${isLight
+                ? 'bg-black text-white border-black/10'
+                : 'bg-white/10 text-white border-white/10 hover:border-blue-500/50'
+              }`}
           >
-            <FontAwesomeIcon icon={isLight ? faMoon : faSun} />
+            {isLight ? <Moon size={16} /> : <Sun size={16} />}
+            <span className="hidden md:inline text-[10px] font-black uppercase tracking-[0.2em]">Theme</span>
           </button>
         </div>
-      </div>
+      </header>
 
-      <button 
+      <button
         onClick={scrollToTop}
         className={`fixed bottom-8 right-8 z-[100] w-14 h-14 rounded-full bg-indigo-600 flex items-center justify-center shadow-[0_0_30px_rgba(79,70,229,0.5)] hover:scale-110 active:scale-95 transition-all duration-500 ${showScroll ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
       >
@@ -233,7 +311,7 @@ export default function Brief() {
             Intelligence Architecture
           </span>
           <h1 ref={briefTitleRef} className={`text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-none ${isLight ? 'text-[#1D1D1F]' : 'text-white'}`}>
-            THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">BLUEPRINT</span> <br /> 
+            THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">BLUEPRINT</span> <br />
             FOR ACTION.
           </h1>
           <p ref={briefDescRef} className={`text-xl md:text-2xl font-light leading-relaxed max-w-2xl mx-auto ${isLight ? 'text-black/60' : 'text-slate-400'}`}>
@@ -245,8 +323,8 @@ export default function Brief() {
         <section className="grid lg:grid-cols-2 gap-20 items-center">
           <div className="space-y-12">
             <h2 className={`text-4xl md:text-5xl font-bold tracking-tight border-l-4 border-indigo-500 pl-8 ${isLight ? 'text-[#1D1D1F]' : 'text-white'}`}>
-                Managerial Logic <br/>
-                <span className={isLight ? 'text-black/40' : 'text-slate-500'}>vs. Simple Chat</span>
+              Managerial Logic <br />
+              <span className={isLight ? 'text-black/40' : 'text-slate-500'}>vs. Simple Chat</span>
             </h2>
             <div className="space-y-8">
               <LogicDetail isLight={isLight} num="01" title="The Bridge" desc="It connects the two worlds. It checks sales against inventory in real-time, identifying why delays happen." />
@@ -255,18 +333,30 @@ export default function Brief() {
             </div>
           </div>
           <div className="relative group">
-             <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-fuchsia-500 rounded-[3rem] blur-xl opacity-20 group-hover:opacity-40 transition duration-1000" />
-             <div className={`relative border rounded-[3rem] p-16 backdrop-blur-3xl shadow-2xl ${isLight ? 'bg-white/90 border-black/5' : 'bg-white/5 border-white/10'}`}>
-                <FontAwesomeIcon icon={faQuoteLeft} className="text-5xl text-indigo-500/20 mb-8" />
-                <p className={`text-3xl font-light leading-tight italic mb-8 ${isLight ? 'text-[#1D1D1F]' : 'text-white'}`}>
-                  "Use standard AI to write emails. <br/>Use <span className="font-bold tracking-tight underline decoration-indigo-500">Loom-Link</span> to run the business."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="h-px w-12 bg-indigo-500" />
-                  <span className="text-[10px] font-black tracking-widest text-indigo-500 uppercase">The Loom-Link Advantage</span>
-                </div>
-             </div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-fuchsia-500 rounded-[3rem] blur-xl opacity-20 group-hover:opacity-40 transition duration-1000" />
+            <div className={`relative border rounded-[3rem] p-16 backdrop-blur-3xl shadow-2xl ${isLight ? 'bg-white/90 border-black/5' : 'bg-white/5 border-white/10'}`}>
+              <FontAwesomeIcon icon={faQuoteLeft} className="text-5xl text-indigo-500/20 mb-8" />
+              <p className={`text-3xl font-light leading-tight italic mb-8 ${isLight ? 'text-[#1D1D1F]' : 'text-white'}`}>
+                "Use standard AI to write emails. <br />Use <span className="font-bold tracking-tight underline decoration-indigo-500">Loom-Link</span> to run the business."
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="h-px w-12 bg-indigo-500" />
+                <span className="text-[10px] font-black tracking-widest text-indigo-500 uppercase">The Loom-Link Advantage</span>
+              </div>
+            </div>
           </div>
+        </section>
+
+        <section ref={sectionRef} className="horizontal-section overflow-hidden h-screen flex items-center bg-[#02040a]">
+            <div className="container-fluid">
+                <h3 ref={textRef} className="horizontal-text whitespace-nowrap flex">
+    {"Loom-Link: The backbone for neural-driven data intelligence       ..........".split("").map((char, i) => (
+        <span key={i} className="char inline-block" style={{ minWidth: char === " " ? "0.25em" : "auto" }}>
+            {char}
+        </span>
+    ))}
+</h3>
+            </div>
         </section>
 
         {/* SECTION: THE BRIDGE VS THE ISLAND */}
@@ -276,25 +366,24 @@ export default function Brief() {
             <p className={`${isLight ? 'text-black/50' : 'text-slate-400'} max-w-2xl mx-auto`}>Loom-Link lives above your stack, connecting your sales, inventory, and accounting into one brain.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
-             <div className={`p-10 rounded-[2.5rem] border ${isLight ? 'bg-white border-black/5 shadow-md' : 'bg-gradient-to-br from-indigo-500/10 to-transparent border-white/10'}`}>
-                <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-[0.2em] mb-4 block">Cross-Platform Blind Spot</span>
-                <p className={`text-lg font-light ${isLight ? 'text-black/70' : 'text-slate-200'}`}>
-                  Standard assistants can tell you an order is "unfulfilled." <strong>Loom-Link tells you why</strong>—by checking raw material lead times.
-                </p>
-             </div>
-             <div className={`p-10 rounded-[2.5rem] border ${isLight ? 'bg-white border-black/5 shadow-md' : 'bg-gradient-to-br from-fuchsia-500/10 to-transparent border-white/10'}`}>
-                <span className="text-[10px] font-bold text-fuchsia-500 uppercase tracking-[0.2em] mb-4 block">Hard Business Rules</span>
-                <p className={`text-lg font-light ${isLight ? 'text-black/70' : 'text-slate-200'}`}>
-                  Program your specific logic: "Never approve a re-order if the client has unpaid invoices." <strong>Loom-Link enforces your rules</strong>.
-                </p>
-             </div>
+            <div className={`p-10 rounded-[2.5rem] border ${isLight ? 'bg-white border-black/5 shadow-md' : 'bg-gradient-to-br from-indigo-500/10 to-transparent border-white/10'}`}>
+              <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-[0.2em] mb-4 block">Cross-Platform Blind Spot</span>
+              <p className={`text-lg font-light ${isLight ? 'text-black/70' : 'text-slate-200'}`}>
+                Standard assistants can tell you an order is "unfulfilled." <strong>Loom-Link tells you why</strong>—by checking raw material lead times.
+              </p>
+            </div>
+            <div className={`p-10 rounded-[2.5rem] border ${isLight ? 'bg-white border-black/5 shadow-md' : 'bg-gradient-to-br from-fuchsia-500/10 to-transparent border-white/10'}`}>
+              <span className="text-[10px] font-bold text-fuchsia-500 uppercase tracking-[0.2em] mb-4 block">Hard Business Rules</span>
+              <p className={`text-lg font-light ${isLight ? 'text-black/70' : 'text-slate-200'}`}>
+                Program your specific logic: "Never approve a re-order if the client has unpaid invoices." <strong>Loom-Link enforces your rules</strong>.
+              </p>
+            </div>
           </div>
         </section>
 
         {/* SECTION: ADMIN COMMAND CENTER */}
-        <section className={`grid md:grid-cols-2 gap-20 items-center py-20 rounded-[4rem] px-12 border transition-colors ${
-          isLight ? 'bg-black/[0.02] border-black/5' : 'bg-indigo-500/[0.02] border-white/5'
-        }`}>
+        <section className={`grid md:grid-cols-2 gap-20 items-center py-20 rounded-[4rem] px-12 border transition-colors ${isLight ? 'bg-black/[0.02] border-black/5' : 'bg-indigo-500/[0.02] border-white/5'
+          }`}>
           <div className={`border rounded-3xl p-12 backdrop-blur-md ${isLight ? 'bg-white border-black/10 shadow-xl' : 'bg-white/5 border-white/10'}`}>
             <span className="text-[10px] uppercase tracking-widest text-slate-500 mb-4 block font-bold">Admin Control Interface</span>
             <div className={`flex items-center gap-4 text-xl font-light ${isLight ? 'text-black' : 'text-indigo-300'}`}>
@@ -342,12 +431,12 @@ export default function Brief() {
 
         {/* COMPARISON & PILLARS */}
         <section className="space-y-20">
-           <div className="max-w-xl">
-              <h2 className={`text-5xl font-bold tracking-tight mb-6 uppercase italic ${isLight ? 'text-black' : 'text-white'}`}>Intelligence Depth</h2>
-              <p className={isLight ? 'text-black/50' : 'text-slate-400'}>Automate decision-making with a tool that understands your entire history.</p>
-           </div>
-           <ComparisonTable isLight={isLight} />
-           <div className="grid md:grid-cols-3 gap-8 pt-10">
+          <div className="max-w-xl">
+            <h2 className={`text-5xl font-bold tracking-tight mb-6 uppercase italic ${isLight ? 'text-black' : 'text-white'}`}>Intelligence Depth</h2>
+            <p className={isLight ? 'text-black/50' : 'text-slate-400'}>Automate decision-making with a tool that understands your entire history.</p>
+          </div>
+          <ComparisonTable isLight={isLight} />
+          <div className="grid md:grid-cols-3 gap-8 pt-10">
             <FeatureCard isLight={isLight} icon={faCubes} title="Unified Core" text="Modular intelligence that fits directly into real business workflows." />
             <FeatureCard isLight={isLight} icon={faChartLine} title="Commerce Ready" text="Instant understanding of products, orders, and customers." />
             <FeatureCard isLight={isLight} icon={faLock} title="Security First" text="Strict role-based access protects sensitive data." />
@@ -391,9 +480,8 @@ function LogicDetail({ num, title, desc, isLight }) {
 
 function ArchStatus({ color, text, isLight }) {
   return (
-    <div className={`border px-8 py-5 rounded-2xl flex items-center gap-5 hover:border-indigo-500/30 transition-all ${
-      isLight ? 'bg-white border-black/10 shadow-sm' : 'bg-white/5 border-white/10'
-    }`}>
+    <div className={`border px-8 py-5 rounded-2xl flex items-center gap-5 hover:border-indigo-500/30 transition-all ${isLight ? 'bg-white border-black/10 shadow-sm' : 'bg-white/5 border-white/10'
+      }`}>
       <div className={`w-2.5 h-2.5 rounded-full ${color} shadow-[0_0_15px_rgba(255,255,255,0.2)]`} />
       <span className={`text-[11px] font-mono tracking-wider uppercase ${isLight ? 'text-black/70' : 'text-slate-300'}`}>{text}</span>
     </div>

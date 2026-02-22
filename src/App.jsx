@@ -6,6 +6,7 @@ import Seehw from './pages/Seehw'
 // import { useEffect, useState } from 'react'
 import NeedHelp from './pages/NeedHelp'
 import Brief from './pages/Brief'
+import Trydemo from './pages/Trydemo'
 
 function App() {
 //   const [isloading , setIsLoading]= useState(false)
@@ -25,6 +26,7 @@ function App() {
         <Route path='/how-it-works' element={<Seehw/>}/>
         <Route path='/need-help' element={<NeedHelp/>} />
         <Route path='/brief' element={<Brief/>} />
+        <Route path='/demo' element={<Trydemo/>} />
       </Routes>
     </>
   )

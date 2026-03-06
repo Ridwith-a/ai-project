@@ -1,42 +1,111 @@
+/* --- LAYOUT UTILITIES --- */
 .perspective-1000 {
-  perspective: 1000px;
+    perspective: 1000px;
 }
+
 .mesh-container {
-  transform: rotateX(20deg) scale(1.2);
+    transform: rotateX(20deg) scale(1.2);
 }
 
-
-/* SYSTEM STATUS TICKER ANIMATION */
+/* --- SYSTEM STATUS TICKER --- */
 .animate-marquee {
     display: inline-block;
     animation: marquee 30s linear infinite;
 }
 
 @keyframes marquee {
-    0% { 
-        transform: translateX(0); 
-    }
-    100% { 
-        transform: translateX(-50%); 
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
-
-/* brief horizontal */
-
+/* --- HORIZONTAL TYPOGRAPHY --- */
 .horizontal-section {
-    background-color: #02040a; /* Matches your Seehw.jsx dark theme */
+    background-color: #02040a; 
 }
 
 .horizontal-text {
     display: inline-block;
-    padding-left: 100vw; /* Starts the text off-screen to the right */
+    padding-left: 100vw;
     font-size: clamp(2rem, 8vw, 10rem);
     font-weight: 900;
     line-height: 1.1;
     text-transform: uppercase;
     letter-spacing: -0.05em;
     color: #ffffff;
-    /* Optional: Subtle glow to match the Loom-Link vibe */
     text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
+
+/* --- LOOM-LINK COSMIC ANIMATIONS --- */
+@keyframes nebulaDrift { 
+    0%, 100% { transform: translate(0,0) scale(1); } 
+    50% { transform: translate(3%, 2%) scale(1.05); } 
+}
+
+@keyframes cloudMove { 
+    0% { transform: translate(-10%, -10%); } 
+    100% { transform: translate(10%, 10%); } 
+}
+
+@keyframes starBrilliance { 
+    0%, 100% { opacity: 0.3; transform: scale(0.9); } 
+    50% { opacity: 1; transform: scale(1.1); } 
+}
+
+@keyframes cometStreak {
+    0% { transform: translateX(0) translateY(0) rotate(-20deg); opacity: 0; }
+    5% { opacity: 1; }
+    100% { transform: translateX(-180vw) translateY(60vh) rotate(-20deg); opacity: 0; }
+}
+
+@keyframes revealHeavy {
+    from { opacity: 0; transform: translateY(100px) filter: blur(20px); }
+    to { opacity: 1; transform: translateY(0) filter: blur(0); }
+}
+
+@keyframes dividerGrow { 
+    from { transform: scaleY(0); } 
+    to { transform: scaleY(1); } 
+}
+
+@keyframes spin { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
+
+@keyframes pulse { 
+    0%, 100% { opacity: 1; } 
+    50% { opacity: 0.5; } 
+}
+
+/* --- ANIMATION CLASSES --- */
+.animate-nebula-drift { animation: nebulaDrift 30s ease-in-out infinite; }
+.animate-cloud-move { animation: cloudMove 20s ease-in-out infinite alternate; }
+.animate-star-brilliance { animation: starBrilliance 4s ease-in-out infinite; }
+.animate-comet-streak { animation: cometStreak 2.5s linear infinite; }
+.animate-gsap-reveal-heavy { animation: revealHeavy 2.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-gsap-divider { animation: dividerGrow 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-spin-slow { animation: spin 10s linear infinite; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* --- DELAYS & PATHS --- */
+.delay-200 { animation-delay: 0.2s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
+.bridge-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; will-change: stroke-dashoffset; }
+
+@keyframes shine {
+            100% { left: 125%; opacity: 1; }
+        }
+        .animate-shine {
+            animation: shine 0.8s forwards;
+        }
+        @keyframes mesh {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(10%, 10%) scale(1.1); }
+        }
+        .animate-mesh-slow {
+            animation: mesh 15s ease-in-out infinite;
+        }
+        .animate-mesh-slow-reverse {
+            animation: mesh 20s ease-in-out infinite reverse;
+        }

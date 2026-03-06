@@ -1,330 +1,309 @@
 import React, { useEffect, useRef, useState } from 'react';
+import FounderCard from '../components/Foundercard';
+import SolutionCard from '../components/Solutioncard';
+import LoomLinkNavLogo from '../components/Navlogo';
+import ServicePillar from '../components/Servicepillar';
+import SettingsTaskbar from '../components/Taskbar';
+import Bridge from '../components/sections/Bridge';
+import Footer from '../components/sections/Footer';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion } from 'framer-motion';
-import {
-    Shield, Zap, Cpu,
-    BarChart3, Terminal, Activity, ArrowRight, Sun, Moon
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useGSAP } from '@gsap/react';
+import { Cpu, ShieldCheck, Code2, LineChart, ArrowRight, Lightbulb, Workflow, Database, LayoutDashboard, Search, Microchip, Globe, Fingerprint, Terminal, Settings } from 'lucide-react';
 
-if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-}
+gsap.registerPlugin(ScrollTrigger);
 
 /* ===============================
-   SUB-COMPONENTS (Theme Aware)
+   SUB-COMPONENTS
 ================================ */
 
-const PersonaPanel = ({ num, title, desc, icon, tag, isLight }) => (
-    <section className="persona-panel w-screen h-screen flex-shrink-0 flex items-center justify-center px-10 md:px-20 relative overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full max-w-7xl items-center">
-            <div className="space-y-8 relative z-10">
-                <div className="text-blue-600 font-mono text-xl tracking-[0.4em] font-black">{num} //</div>
-                <h2 className="text-[12vw] lg:text-[7vw] font-black tracking-tighter leading-none uppercase">{title}</h2>
-                <p className={`text-xl md:text-2xl font-light leading-relaxed max-w-xl italic transition-colors duration-700 ${isLight ? 'text-black/60' : 'text-white/30'}`}>
-                    "{desc}"
-                </p>
-            </div>
-            <div className="relative flex justify-center items-center">
-                <div className="absolute w-64 h-64 bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
-                <motion.div
-                    animate={{ y: [-15, 15, -15], opacity: [0.4, 0.7, 0.4] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative z-10 scale-75 md:scale-100"
-                >
-                    {icon}
-                </motion.div>
-                <div className={`absolute bottom-0 right-0 md:right-10 border px-4 py-2 backdrop-blur-md transition-all duration-700 ${isLight ? 'border-black/10 bg-white/50' : 'border-white/10 bg-black/50'}`}>
-                    <span className={`text-[10px] font-mono tracking-[0.3em] uppercase transition-colors duration-700 ${isLight ? 'text-black/40' : 'text-white/40'}`}>{tag}</span>
+
+
+
+const ConcernsToInference = ({ isLight }) => {
+    const containerRef = useRef(null);
+    useGSAP(() => {
+        gsap.from(".mapping-card", {
+            y: 50, opacity: 0, stagger: 0.3,
+            scrollTrigger: { trigger: containerRef.current, start: "top 60%" }
+        });
+    }, { scope: containerRef });
+
+    const MAPPINGS = [
+        { concern: "You’re losing money on missed sales because your warehouse and your website aren’t sharing the same information.", inference: "The Unified Pulse: We bridge your stock and your sales into one clear, real-time view.", tag: "STOP_REVENUE_LEAK" },
+        { concern: "Your team spends half the week manually moving numbers between files just to tell you how the business is doing.", inference: "Automated Intelligence: We build the custom engine that does the reporting for you in seconds.", tag: "RECLAIM_YOUR_TIME" },
+        { concern: "You want to use AI to get ahead, but you can't risk your private company data being stored on a public cloud.", inference: "Private Architecture: Your AI lives on your hardware. Your data never leaves your sight.", tag: "TOTAL_OWNERSHIP" }
+    ];
+
+
+    return (
+        <section ref={containerRef} className="py-40 px-6 relative z-30">
+            <div className="max-w-7xl mx-auto text-center">
+                <div className="mb-24">
+                    <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter mb-6">From Chaos to <span className="text-blue-600">Clarity</span></h2>
+                    <p className={`text-xl italic opacity-50 ${isLight ? 'text-black' : 'text-white'}`}>Stop chasing your data. Start leading with it.</p>
+                </div>
+                <div className="space-y-12">
+                    {MAPPINGS.map((item, idx) => (
+                        <div key={idx} className="mapping-card group relative grid md:grid-cols-11 gap-4 items-center">
+                            <div className={`md:col-span-5 p-10 rounded-3xl border transition-all text-left ${isLight ? 'bg-black/[0.03] border-black/5' : 'bg-white/5 border-white/5 opacity-60 group-hover:opacity-100'}`}>
+                                <span className="font-mono text-[9px] tracking-widest uppercase block mb-4 text-red-500/60 font-bold">THE_FRUSTRATION // 0{idx + 1}</span>
+                                <p className="text-xl md:text-2xl font-light italic leading-relaxed">"{item.concern}"</p>
+                            </div>
+                            <div className="md:col-span-1 flex justify-center py-6 md:py-0"><ArrowRight size={28} className="text-blue-600 animate-pulse md:rotate-0 rotate-90" /></div>
+                            <div className={`md:col-span-5 p-10 rounded-3xl border-2 border-blue-600 transition-all text-left ${isLight ? 'bg-white shadow-xl' : 'bg-[#050505] shadow-[0_0_50px_rgba(59,130,246,0.15)]'}`}>
+                                <div className="flex justify-between items-center mb-4"><span className="font-mono text-[10px] tracking-widest uppercase text-blue-500 font-black">{item.tag}</span><ShieldCheck size={18} className="text-blue-500" /></div>
+                                <p className="text-xl md:text-2xl font-black italic leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 uppercase">{item.inference}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
-const ValueCard = ({ icon, title, desc, isLight }) => (
-    <div className={`relative p-10 overflow-hidden border-l-2 transition-all duration-500 group ${isLight
-            ? 'bg-black/[0.02] border-blue-600/20 hover:bg-white'
-            : 'bg-white/[0.01] border-blue-500/30 hover:bg-blue-500/10'
-        }`}>
-        {/* The "Command Center" Styling */}
-        <div className="flex items-start gap-6">
-            <div className="text-blue-600 group-hover:scale-110 transition-transform duration-500">
-                {icon}
-            </div>
-            <div className="space-y-3">
-                <h4 className="text-2xl font-black uppercase tracking-tight italic italic">
-                    {title}
-                </h4>
-                <p className={`text-base leading-relaxed font-mono opacity-60`}>
-                    {desc}
-                </p>
-            </div>
-        </div>
 
-        {/* System Status Indicator */}
-        <div className="mt-8 flex items-center gap-2 opacity-30 text-[9px] font-mono tracking-widest">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            SECURE_DATA_NODE // 159.203.5.70
-        </div>
-    </div>
-);
 
-const PillarCard = ({ icon, title, desc, command, isLight }) => (
-    <div className={`p-12 md:p-20 group transition-all duration-700 border-r border-b ${isLight ? 'bg-[#F5F5F7] hover:bg-white border-black/5' : 'bg-black hover:bg-blue-600/5 border-white/10'}`}>
-        <div className="text-blue-600 mb-8 group-hover:scale-110 transition-transform duration-500">{icon}</div>
-        <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight">{title}</h3>
-        <p className={`text-lg leading-relaxed mb-10 transition-colors duration-700 ${isLight ? 'text-black/50' : 'text-white/40'}`}>{desc}</p>
-        <div className={`font-mono text-[10px] p-4 border transition-all duration-700 ${isLight ? 'bg-black/5 border-black/10 text-black/40' : 'bg-blue-500/5 border-blue-500/10 text-blue-500/50'}`}>
-            {command}
-        </div>
-    </div>
-);
 
 /* ===============================
-   MAIN COMPONENT
+   MAIN AGENCY ARCHITECTURE
 ================================ */
 
-const LoomLinkFinal = () => {
-    const [isLight, setIsLight] = useState(() => {
-        return localStorage.getItem('theme') === 'light';
-    });
-
-    // 2. Save to localStorage whenever the theme changes
-    useEffect(() => {
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    }, [isLight]);
+export default function LoomLinkAgency() {
+    const [isLight, setIsLight] = useState(() => localStorage.getItem('theme') === 'light');
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const mainRef = useRef(null);
     const horizontalRef = useRef(null);
     const bgTextRef = useRef(null);
     const navRef = useRef(null);
-    const heroTitleRef = useRef(null);
-    const heroDescRef = useRef(null);
-    const heroGlowRef = useRef(null);
+    const heroRef = useRef(null);
+    const lifecycleRef = useRef(null);
+    const footerRef = useRef(null);
+    const footerLogoTextRef = useRef(null);
 
     useEffect(() => {
-        let ctx = gsap.context(() => {
-            const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
-            heroTl.fromTo(heroGlowRef.current, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 2.2, ease: "expo.out" })
-                .from(heroTitleRef.current, { y: 140, skewY: 8, opacity: 0, duration: 1.6 }, "-=1.8")
-                .from(heroDescRef.current, { y: 30, opacity: 0, duration: 1.2 }, "-=1.0");
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }, [isLight]);
 
-           gsap.to(bgTextRef.current, {
-    xPercent: -45,
-    yPercent: 12,
-    force3D: true, // Forces GPU rendering
-    scrollTrigger: {
-        trigger: mainRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1, // Increase this to 1.5 or 2 for a "weightier", smoother feel
-        invalidateOnRefresh: true,
-    }
-});
 
-            const panels = gsap.utils.toArray(".persona-panel");
 
-        // 2. Animate the panels inside the pinned container
+    useGSAP(() => {
+        // 1. FIXED HEADER ENTRANCE ANIMATION
+        const headerTl = gsap.timeline({ defaults: { ease: "expo.out" } });
+        headerTl.from(".hero-line", { y: 150, skewY: 10, stagger: 0.2, duration: 2, opacity: 0 })
+            .from(".hero-sub", { y: 30, opacity: 0, duration: 1.5 }, "-=1.2");
+
+        // 2. SCROLL-BASED NAVBAR
+        const showAnim = gsap.from(navRef.current, {
+            yPercent: -100, paused: true, duration: 0.3, ease: "power2.out"
+        }).progress(1);
+
+        ScrollTrigger.create({
+            start: "top top", end: "max",
+            onUpdate: (self) => { self.direction === -1 ? showAnim.play() : showAnim.reverse(); }
+        });
+
+        // 3. Parallax BG Text
+        gsap.to(bgTextRef.current, {
+            xPercent: -40,
+            scrollTrigger: { trigger: mainRef.current, start: "top top", end: "bottom bottom", scrub: 2 }
+        });
+
+        // 4. Horizontal Solution Scroller
+        const panels = gsap.utils.toArray(".solution-card");
         gsap.to(panels, {
-            // We move all panels by -100% of their width, EXCEPT the last one
             xPercent: -100 * (panels.length - 1),
             ease: "none",
-            scrollTrigger: {
-                trigger: horizontalRef.current,
-                pin: true,
-                scrub: 1,
-                // Ensure 'end' is calculated based on the horizontal content width
-                end: () => `+=${horizontalRef.current.offsetWidth}`,
-                invalidateOnRefresh: true,
-            }
+            scrollTrigger: { trigger: horizontalRef.current, pin: true, scrub: 1.5, end: () => `+=${horizontalRef.current.offsetWidth}` }
         });
-            const showAnim = gsap.from(navRef.current, {
-                yPercent: -100,
-                paused: true,
-                duration: 0.3,
-                ease: "power2.out"
-            }).progress(1);
 
-            ScrollTrigger.create({
-                start: "top top",
-                end: "max",
-                onUpdate: (self) => {
-                    self.direction === -1 ? showAnim.play() : showAnim.reverse();
-                }
-            });
+        // 5. FOOTER NEURAL REVEAL
+        gsap.from(footerLogoTextRef.current, {
+            letterSpacing: "0.8em", opacity: 0, filter: "blur(15px)", duration: 2.5, ease: "power4.out",
+            scrollTrigger: { trigger: footerRef.current, start: "top 90%" }
+        });
 
-            ScrollTrigger.refresh();
-        }, mainRef);
+        gsap.from(".lifecycle-step", {
+            y: 100, opacity: 0, stagger: 0.3,
+            scrollTrigger: { trigger: lifecycleRef.current, start: "top 70%" }
+        });
 
-        return () => ctx.revert();
-    }, []);
+        gsap.to(".engine-glow", { scale: 1.4, opacity: 0.4, repeat: -1, yoyo: true, duration: 3 });
 
-    
+    }, { scope: mainRef });
+
+
+
 
     return (
-        <div ref={mainRef} className={`transition-colors duration-1000 font-sans overflow-x-hidden antialiased selection:bg-blue-600 ${isLight ? 'bg-[#F5F5F7] text-[#1D1D1F]' : 'bg-[#020202] text-[#F5F5F7]'
-            }`}>
+        <div ref={mainRef} className={`transition-colors duration-1000 font-sans overflow-x-hidden antialiased ${isLight ? 'bg-[#F5F5F7] text-[#1D1D1F]' : 'bg-[#02040a] text-slate-100'}`}>
 
-            <div className="md:ps-220 ps-80 fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-                <div ref={bgTextRef} className={`text-[35vw] font-black tracking-tighter leading-none select-none italic whitespace-nowrap transition-colors duration-1000 ${isLight ? 'text-black/[0.09]' : 'text-white/[0.09]'
-                    }`}>
+            <SettingsTaskbar isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} isLight={isLight} setIsLight={setIsLight} />
+
+            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+                <div ref={bgTextRef} className={`text-[35vw] ms-200  font-black italic tracking-tighter opacity-[0.10] whitespace-nowrap will-change-transform`}>
                     LOOM-LINK
                 </div>
             </div>
 
-            {/* RESPONSIVE NAV */}
-           <nav ref={navRef} className={`fixed top-0 w-full z-[200] flex items-center justify-between px-4 md:px-12 h-16 md:h-18 backdrop-blur-md border-b transition-all duration-700 ${
-    isLight ? 'bg-white/70 border-black/5' : 'bg-black/10 border-white/5'
-}`}>
-    {/* LEFT COLUMN: THEME TOGGLE */}
-    <div className="flex-1 flex justify-start items-center">
-        <button
-            onClick={() => setIsLight(!isLight)}
-            className={`p-2 md:p-3 rounded-lg md:rounded-xl border transition-all duration-500 ${
-                isLight ? 'bg-black text-white border-black/10' : 'bg-white/10 text-white border-white/10'
-            }`}
-        >
-            {/* Smaller icon for mobile */}
-            {isLight ? <Moon size={16} className="md:w-[18px]" /> : <Sun size={16} className="md:w-[18px]" />}
-        </button>
-    </div>
+            {/* NAVBAR */}
+            <nav ref={navRef} className={`fixed top-0 w-full z-[500] flex items-center justify-between px-12 h-20 backdrop-blur-2xl border-b transition-all ${isLight ? 'bg-white/80 border-black/5 shadow-sm' : 'bg-black/60 border-white/5'}`}>
 
-    {/* CENTER COLUMN: LOOM-LINK LOGO */}
-    <div className="flex-[2] md:flex-1 flex justify-center items-center">
-        <div className="flex items-center gap-2 md:gap-3">
-            <div className="flex items-center gap-[2px] md:gap-[3px] h-4 md:h-6 group">
-                {[0, 1, 2, 3, 4].map((i) => (
-                    <div
-                        key={i}
-                        className="w-[2px] md:w-[3px] bg-blue-600 rounded-full transition-all duration-300 group-hover:bg-white"
-                        style={{
-                            height: `${[40, 70, 100, 60, 30][i]}%`,
-                            animation: `wave 1.5s ease-in-out infinite ${i * 0.1}s`
-                        }}
-                    />
-                ))}
-            </div>
-            {/* Responsive text sizing */}
-            <span className="text-sm md:text-2xl font-black tracking-tighter uppercase whitespace-nowrap">
-                Loom-Link
-            </span>
-        </div>
-    </div>
-
-    {/* RIGHT COLUMN: TRY DEMO */}
-    <div className="flex-1 flex justify-end">
-        <Link to='/demo'>
-            <button className={`px-4 md:px-8 py-2 md:py-3 rounded-lg md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] transition-all duration-500 shadow-lg shadow-blue-600/10 ${
-                isLight ? 'bg-black text-white' : 'bg-blue-600 text-white hover:bg-blue-500'
-            }`}>
-                <span className="md:hidden">Demo</span>
-                <span className="hidden md:inline">Try Demo</span>
-            </button>
-        </Link>
-    </div>
-</nav>
-
-            {/* HERO */}
-            <section className="h-screen flex flex-col items-center justify-center text-center px-6 relative z-10">
-                <div ref={heroGlowRef} className="absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[150px] rounded-full" />
-                <h1 ref={heroTitleRef} className="text-[16vw] md:text-[11rem] font-bold tracking-tighter leading-[0.8] uppercase">
-                    OWN YOUR <br />
-                    <span className={`text-transparent bg-clip-text bg-gradient-to-b ${isLight ? 'from-blue-600 to-blue-900' : 'from-white to-neutral-700'}`}>
-                        INSIGHTS !
+                {/* LEFT SECTION: BRANDING (Logo + Text wrapped in flex) */}
+                <div className="flex items-center gap-2 group cursor-pointer">
+                    <div className="flex items-center justify-center">
+                        {/* Logo component receiving theme state */}
+                        <LoomLinkNavLogo isLight={isLight} />
+                    </div>
+                    <span className={`text-xl font-black uppercase italic tracking-tighter transition-colors ${isLight ? 'text-black' : 'text-white'}`}>
+                        Loom-<span className="text-blue-600">Link</span>
                     </span>
-                </h1>
-                <p ref={heroDescRef} className={`max-w-xl mx-auto mt-8 text-base md:text-2xl font-light italic transition-colors duration-700 ${isLight ? 'text-black/40' : 'text-white/40'}`}>
-                    An AI assistant that turns your data into clear, instant decisions.
-                </p>
+                </div>
+
+                {/* RIGHT SECTION: ACTIONS */}
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setIsSettingsOpen(true)}
+                        className={`p-2.5 rounded-lg border transition-all active:scale-90 ${isLight
+                            ? 'bg-black/5 border-black/5 text-black hover:bg-black/10'
+                            : 'bg-white/5 border-white/10 text-white/50 hover:text-white hover:bg-white/10'
+                            }`}
+                    >
+                        <Settings size={16} className={isSettingsOpen ? 'animate-spin' : ''} />
+                    </button>
+                </div>
+            </nav>
+
+            {/* HEADER (AIM) SECTION */}
+            <section id="aim" ref={heroRef} className="h-screen flex flex-col items-center justify-center text-center px-6 relative z-10">
+                <div className="overflow-hidden mb-6">
+                    <div className="hero-line text-indigo-500 font-mono text-sm tracking-[0.6em] uppercase">Private Decision Infrastructure</div>
+                </div>
+                <div className="overflow-hidden">
+                    <h1 className="hero-line text-[12vw] md:text-[9rem] font-black tracking-tighter leading-[0.8] uppercase italic">Sovereign <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">Intelligence</span></h1>
+                </div>
+                <p className="hero-sub max-w-3xl mx-auto mt-12 text-xl md:text-3xl font-light italic opacity-60 leading-relaxed">"We architect custom AI environments that master your specific business logic, engineered for absolute data autonomy."</p>
             </section>
 
-            {/* PERSONAS */}
-            <div ref={horizontalRef} className={`flex flex-nowrap overflow-hidden border-y transition-colors duration-1000 relative z-10 ${isLight ? 'bg-white/50 border-black/5' : 'bg-black/50 border-white/5'
-                }`}>
-                <PersonaPanel isLight={isLight} num="01" title="Executive" desc="High-level summaries and proactive visualizations." icon={<BarChart3 size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Decision_Engine" />
-                <PersonaPanel isLight={isLight} num="02" title="Manager" desc="Automate team reporting and export insights instantly." icon={<Activity size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Ops_Optimization" />
-                <PersonaPanel isLight={isLight} num="03" title="Analyst" desc="Audit AI logic layers to ensure mathematical precision." icon={<Terminal size={240} strokeWidth={0.5} className="text-blue-600/40" />} tag="Logic_Kernel" />
+
+
+            <ConcernsToInference isLight={isLight} />
+
+            <div id="solutions" ref={horizontalRef} className={`flex flex-nowrap overflow-hidden border-y transition-colors relative z-10 ${isLight ? 'bg-white/30 border-black/5' : 'bg-black/30 border-white/5'}`}>
+                <SolutionCard isLight={isLight} num="01" title="Core - Intel" desc="Autonomous agents that parse massive document silos into actionable operational strategy." tag="Neural_Processing" icon={<Database size={300} strokeWidth={0.3} />} />
+                <SolutionCard isLight={isLight} num="02" title="Logic Weaver" desc="Custom AI layers that synthesize deep database clusters into human-centric executive narratives." tag="Synthesis_Engine" icon={<LineChart size={300} strokeWidth={0.3} />} />
+                <SolutionCard isLight={isLight} num="03" title="Private Nodes" desc="Enterprise models trained on private data sets, deployed with zero external connectivity." tag="Secure_Isolation" icon={<Microchip size={300} strokeWidth={0.3} />} />
             </div>
 
-            {/* TERMINAL SECTION */}
-            <section className="py-20 md:py-40 px-4 md:px-6 flex flex-col items-center relative z-10">
-                <div className={`w-full max-w-5xl backdrop-blur-xl border rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-700 ${isLight ? 'bg-white/80 border-black/10' : 'bg-[#080808]/80 border-white/10'
-                    }`}>
-                    <div className={`px-6 md:px-10 py-4 md:py-6 border-b flex justify-between items-center text-[9px] md:text-[10px] font-mono tracking-widest ${isLight ? 'bg-black/5 border-black/5 text-black/40' : 'bg-black/40 border-white/5 text-white/40'
-                        }`}>
-                        <span>LoomLink_Terminal // AI_CHAT_BRIDGE</span>
-                        <span className="text-blue-600">Node: NVIDIA_L40S</span>
-                    </div>
-                    <div className="p-10 md:p-32 flex flex-col items-center text-center space-y-8 md:space-y-10">
-                        <h3 className="text-3xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9]">
-                            The future of <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Data Conversation.</span>
-                        </h3>
-                        <p className={`max-w-xl mx-auto text-base md:text-xl font-light italic transition-colors duration-700 ${isLight ? 'text-black/60' : 'text-white/40'}`}>
-                            "Our AI chat bridge transforms complex SQL clusters into human-readable executive intelligence in milliseconds."
-                        </p>
-                        <Link to="/how-it-works">
-                            <button className={`group flex items-center gap-4 md:gap-6 px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm transition-all duration-500 ${isLight ? 'bg-black text-white hover:bg-blue-600' : 'bg-white text-black hover:bg-blue-600 hover:text-white'
-                                }`}>
-                                See how it works <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                            </button>
-                        </Link>
+
+
+            <section id="security" className={`relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-l transition-colors duration-1000 ${isLight ? 'border-black/5' : 'border-white/5'}`}>
+                <ServicePillar isLight={isLight} icon={<ShieldCheck size={40} />} title="The Safety Lock" desc="Our AI is engineered to report and advise, never to alter. Every major move requires your final approval, ensuring your records remain untouched and safe." command="HUMAN_VERIFICATION_REQUIRED" />
+                <ServicePillar isLight={isLight} icon={<Workflow size={40} />} title="Neural Mapping" desc="We decode your unique business workflow before architecting a single intelligence module tailored to your operational logic." command="SYSTEM_MAPPING_LIVE" />
+                <ServicePillar isLight={isLight} icon={<Fingerprint size={40} />} title="Air-Gapped Ops" desc="Deployments reside on your private infrastructure. Your business intelligence never leaks to public LLMs or external servers." command="NODE_ISOLATION_SET" />
+                <ServicePillar isLight={isLight} icon={<Terminal size={40} />} title="Logic Engines" desc="Advanced reasoning systems designed to handle the complex edge cases and business rules unique to your specific industry." command="INFERENCE_ENGINE_READY" />
+            </section>
+
+            <section id="process" ref={lifecycleRef} className="py-40 px-6 relative z-10 bg-indigo-600/5 text-center">
+                <div className="max-w-7xl mx-auto space-y-32">
+                    <div className="space-y-6"><h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter">The Intelligence Cycle.</h2><p className="text-xl opacity-40 italic max-w-2xl mx-auto">From discovery to deployment, we build the bridge between your enterprise data and sovereign AI.</p></div>
+                    <div className="grid md:grid-cols-4 gap-12 relative text-left">
+                        <div className="absolute top-1/2 left-0 w-full h-px bg-blue-600/20 hidden md:block" />
+                        {[
+                            { icon: <Search />, title: "01. Logic Audit", body: "We map your operational areas to identify critical intelligence gaps." },
+                            { icon: <Lightbulb />, title: "02. Synthesis", body: "Architecting the neural pathways between raw inputs and high-level strategy." },
+                            { icon: <Code2 />, title: "03. Assembly", body: "Engineering a custom interface designed for intuitive, real-time AI interaction." },
+                            { icon: <Globe />, title: "04. Deployment", body: "On-premise integration ensuring full ownership of the logic." }
+                        ].map((step, i) => (
+                            <div key={i} className="lifecycle-step relative z-10 space-y-8 bg-black/40 p-10 border border-white/5 rounded-[2rem] backdrop-blur-xl">
+                                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white">{step.icon}</div>
+                                <h4 className="text-2xl font-bold italic">{step.title}</h4><p className="opacity-50 text-sm leading-relaxed">{step.body}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* VALUE GRID */}
-            <section className="py-20 md:py-40 px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                <ValueCard isLight={isLight} icon={<Shield />} title="Sovereign" desc="Runs entirely on-premise. Sensitive data never leaves your network." />
-                <ValueCard isLight={isLight} icon={<Zap />} title="Real-Time" desc="Semantic Caching delivers repeat insights in under 12ms." />
-                <ValueCard isLight={isLight} icon={<Activity />} title="Proactive" desc="Automatically generates charts and drafts reports on trend detection." />
-            </section>
+            {/* INTERACTIVE BRIDGE SECTION */}
+            <Bridge isLight={isLight} />
 
-            <div className={`w-full py-4 border-y font-mono text-[9px] md:text-[10px] uppercase tracking-[0.5em] overflow-hidden whitespace-nowrap relative z-10 ${isLight ? 'bg-black/5 border-black/5 text-black/30' : 'bg-white/5 border-white/5 text-white/20'
-                }`}>
-                <div className="animate-marquee inline-block">
-                    Node_Status: Online // 159.203.5.70 // Latency: 12ms // Action_Bridge: Active // Encryption: SHA-256 // &nbsp;
-                    Node_Status: Online // 159.203.5.70 // Latency: 12ms // Action_Bridge: Active // Encryption: SHA-256 //
+
+            {/* CO-founders */}
+            <section id="leadership" className={`py-22 relative z-10 border-t transition-colors duration-700 overflow-hidden ${isLight ? 'bg-[#F5F5F7] border-black/5' : 'bg-[#020204] border-white/5'}`}>
+
+                {/* ADVANCED MESH GRADIENT BACKGROUND */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    {/* Deep Core Glow */}
+                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] blur-[160px] rounded-full opacity-20 
+            ${isLight ? 'bg-blue-400' : 'bg-blue-900'}`} />
+
+                    {/* Floating Accent 1 */}
+                    <div className={`absolute top-[-10%] left-[-5%] w-[600px] h-[600px] blur-[120px] rounded-full animate-mesh-slow 
+            ${isLight ? 'bg-blue-200/40' : 'bg-blue-600/10'}`} />
+
+                    {/* Floating Accent 2 */}
+                    <div className={`absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] blur-[120px] rounded-full animate-mesh-slow-reverse
+            ${isLight ? 'bg-indigo-200/40' : 'bg-indigo-600/10'}`} />
                 </div>
-            </div>
 
-            {/* PILLARS */}
-            <section className="py-20 md:py-40 px-6 relative z-10 max-w-7xl mx-auto">
-                <div className="flex flex-col mb-16 md:mb-20">
-                    <div className="flex items-center gap-4 text-blue-600 font-mono text-sm tracking-[0.5em] uppercase mb-4">
-                        <div className="w-12 h-[1px] bg-blue-600" /> Core Capabilities
+                <div className="max-w-[1600px] mx-auto px-10 relative z-10">
+
+                    {/* HEADER ASSEMBLY */}
+                    <div className="mb-32 flex flex-col md:flex-row md:items-end justify-between gap-8">
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                                <div className="h-[1px] w-12 bg-blue-600" />
+                                <span className={`font-mono text-[10px] tracking-[0.6em] uppercase font-black ${isLight ? 'text-blue-700' : 'text-blue-500'}`}>
+                                    LoomLink_Founding_Team
+                                </span>
+                            </div>
+                            <h2 className={`text-7xl md:text-9xl font-black uppercase italic tracking-tighter leading-none ${isLight ? 'text-black' : 'text-white'}`}>
+                                The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-400 to-blue-500 animate-gradient-x">Architects.</span>
+                            </h2>
+                        </div>
+
                     </div>
-                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-[0.9]">
-                        Engineered for <br /> <span className={isLight ? 'text-black/20' : 'text-white/20'}>Sovereign Action.</span>
-                    </h2>
+
+                    {/* FOUNDER STAGE */}
+                    <div className="flex flex-wrap lg:flex-nowrap items-stretch justify-center gap-8">
+                        <FounderCard
+                            name="Hrithik_Pramod"
+                            role="Co-Founder & AI Systems Architect"
+                            icon={<Cpu size={24} />}
+                            color="blue"
+                            isLight={isLight}
+                            bio="Hrithik is the technical visionary behind LoomLink, bridging high-scale distributed systems with cutting-edge AI. He specializes in transforming complex data landscapes into autonomous systems through robust backend engineering."
+                            tags={["Neural_Systems", "Backend_Scale"]}
+                        />
+
+                        <FounderCard
+                            name="Akhilesh"
+                            role="Co-Founder & Product Manager"
+                            icon={<ShieldCheck size={24} />}
+                            color="orange"
+                            isLight={isLight}
+                            bio="With over eight years of experience engineering robust cloud infrastructure, Akhilesh leads the product vision. His expertise in Kubernetes and local LLM orchestration ensures Loom Link delivers hallucination-free, SAP-compliant intelligence."
+                            tags={["Cloud_Infra", "Kubernetes", "Edge-AI"]}
+                        />
+
+                        <FounderCard
+                            name="Ridwith_A"
+                            role="Co-Founder & Full-Stack Architect"
+                            icon={<LayoutDashboard size={24} />}
+                            color="teal"
+                            isLight={isLight}
+                            bio="Ridwith is the architect of the human experience, bridging MERN expertise with sharp operational strategy. He specializes in high-fidelity Prompt Engineering to ensure complex logic is translated into secure clarity."
+                            tags={["MERN_Expertise", "UX_Logic", "Prompt_Engineer"]}
+                        />
+                    </div>
                 </div>
-                <div className={`grid grid-cols-1 md:grid-cols-2 border-t border-l transition-colors duration-700 ${isLight ? 'border-black/5 opacity-80' : 'border-white/10 '}`}>
-                    <PillarCard isLight={isLight} icon={<Terminal size={40} />} title="Natural Language to Insight
-" desc="Convert prompts to precise SQL logic and results instantly." command="EXECUTING: NL_QUERY_SYNTHESIS" />
-                    <PillarCard isLight={isLight} icon={<Zap size={40} />} title="The Loom-Link Action Rule" desc="Autonomous agent that analyzes and drafts executive reports." command="STATUS: AGENT_ACTIVE" />
-                    <PillarCard isLight={isLight} icon={<Cpu size={40} />} title="Semantic Caching" desc="High-speed performance powered by intelligent retrieval." command="LATENCY: 12MS" />
-                    <PillarCard isLight={isLight} icon={<BarChart3 size={40} />} title="Proactive Visuals" desc="Charts that materialize the moment data supports it." command="MODE: RENDER_DYNAMO" />
-                </div>
+
+
             </section>
 
-            
+            <Footer />
 
-            {/* FOOTER */}
-            <footer className={`pt-40 md:pt-60 pb-20 relative z-10 border-t transition-all duration-1000 ${isLight ? 'bg-white opacity-60 border-black/5' : 'bg-black/20 border-white/5'}`}>
-                <div className="max-w-7xl mx-auto px-12 text-center">
-                    <h2 className={`text-[15vw] font-bold tracking-tighter leading-none mb-10 uppercase select-none transition-all duration-700 ${isLight ? 'text-black/80' : 'text-white/60'
-                        }`}>
-                        LOOM-LINK
-                    </h2>
-                    <Link to="/brief">
-                        <button className="px-10 md:px-16 py-4 md:py-6 rounded-full font-black text-lg md:text-xl transition-all duration-500 shadow-2xl bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 active:scale-95">
-                            Brief About Us
-                        </button>
-                    </Link>
-                </div>
-            </footer>
         </div>
     );
-};
-
-export default LoomLinkFinal;
+}

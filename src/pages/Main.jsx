@@ -22,38 +22,66 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ConcernsToInference = ({ isLight }) => {
     const containerRef = useRef(null);
+
     useGSAP(() => {
         gsap.from(".mapping-card", {
-            y: 50, opacity: 0, stagger: 0.3,
+            y: 50, 
+            opacity: 0, 
+            stagger: 0.3,
             scrollTrigger: { trigger: containerRef.current, start: "top 60%" }
         });
     }, { scope: containerRef });
 
     const MAPPINGS = [
-        { concern: "You’re losing money on missed sales because your warehouse and your website aren’t sharing the same information.", inference: "The Unified Pulse: We bridge your stock and your sales into one clear, real-time view.", tag: "STOP_REVENUE_LEAK" },
-        { concern: "Your team spends half the week manually moving numbers between files just to tell you how the business is doing.", inference: "Automated Intelligence: We build the custom engine that does the reporting for you in seconds.", tag: "RECLAIM_YOUR_TIME" },
-        { concern: "You want to use AI to get ahead, but you can't risk your private company data being stored on a public cloud.", inference: "Private Architecture: Your AI lives on your hardware. Your data never leaves your sight.", tag: "TOTAL_OWNERSHIP" }
+        { 
+            concern: "Technicians bypass structured ERP fields under time pressure, resulting in 'dirty data' that corrupts predictive maintenance models.", 
+            inference: "Zero-Friction SAP Compliance: Our Semantic Analyst automatically translates unstructured field notes into verified, standard SAP failure codes in real-time.", 
+            tag: "ERP_INTEGRITY" 
+        },
+        { 
+            concern: "Deployed robotics collect massive amounts of sensor data, but lack the operational context to differentiate genuine anomalies from normal process variations.", 
+            inference: "Contextual Sensor Fusion: We build the intelligence layer that fuses multi-modal robotic data with historical asset context, eliminating false positives.", 
+            tag: "CONTEXTUAL_FUSION" 
+        },
+        { 
+            concern: "You want to leverage advanced LLMs, but IT and OT security regulations strictly prohibit critical infrastructure data from leaving the facility.", 
+            inference: "Sovereign Architecture: 100% Air-Gapped execution. Your AI models and your data live securely on your private hardware.", 
+            tag: "AIR_GAPPED_SECURITY" 
+        }
     ];
 
-
     return (
-        <section ref={containerRef} className="py-40 px-6 relative z-30">
+        <section ref={containerRef} className={`py-40 px-6 relative z-30 transition-colors ${isLight ? 'bg-white' : 'bg-[#02040a]'}`}>
             <div className="max-w-7xl mx-auto text-center">
                 <div className="mb-24">
-                    <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter mb-6">From Chaos to <span className="text-blue-600">Clarity</span></h2>
+                    <h2 className={`text-5xl md:text-8xl font-black uppercase italic tracking-tighter mb-6 ${isLight ? 'text-black' : 'text-white'}`}>
+                        From Chaos to <span className="text-blue-600">Clarity</span>
+                    </h2>
                     <p className={`text-xl italic opacity-50 ${isLight ? 'text-black' : 'text-white'}`}>Stop chasing your data. Start leading with it.</p>
                 </div>
                 <div className="space-y-12">
                     {MAPPINGS.map((item, idx) => (
                         <div key={idx} className="mapping-card group relative grid md:grid-cols-11 gap-4 items-center">
+                            {/* Frustration Card */}
                             <div className={`md:col-span-5 p-10 rounded-3xl border transition-all text-left ${isLight ? 'bg-black/[0.03] border-black/5' : 'bg-white/5 border-white/5 opacity-60 group-hover:opacity-100'}`}>
                                 <span className="font-mono text-[9px] tracking-widest uppercase block mb-4 text-red-500/60 font-bold">THE_FRUSTRATION // 0{idx + 1}</span>
-                                <p className="text-xl md:text-2xl font-light italic leading-relaxed">"{item.concern}"</p>
+                                <p className={`text-xl md:text-2xl font-light italic leading-relaxed ${isLight ? 'text-black/80' : 'text-white/80'}`}>"{item.concern}"</p>
                             </div>
-                            <div className="md:col-span-1 flex justify-center py-6 md:py-0"><ArrowRight size={28} className="text-blue-600 animate-pulse md:rotate-0 rotate-90" /></div>
+
+                            {/* Transition Arrow */}
+                            <div className="md:col-span-1 flex justify-center py-6 md:py-0">
+                                <ArrowRight size={28} className="text-blue-600 animate-pulse md:rotate-0 rotate-90" />
+                            </div>
+
+                            {/* Solution Card */}
                             <div className={`md:col-span-5 p-10 rounded-3xl border-2 border-blue-600 transition-all text-left ${isLight ? 'bg-white shadow-xl' : 'bg-[#050505] shadow-[0_0_50px_rgba(59,130,246,0.15)]'}`}>
-                                <div className="flex justify-between items-center mb-4"><span className="font-mono text-[10px] tracking-widest uppercase text-blue-500 font-black">{item.tag}</span><ShieldCheck size={18} className="text-blue-500" /></div>
-                                <p className="text-xl md:text-2xl font-black italic leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 uppercase">{item.inference}</p>
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="font-mono text-[10px] tracking-widest uppercase text-blue-500 font-black">{item.tag}</span>
+                                    <ShieldCheck size={18} className="text-blue-500" />
+                                </div>
+                                <p className="text-xl md:text-2xl font-black italic leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 uppercase">
+                                    {item.inference}
+                                </p>
                             </div>
                         </div>
                     ))}
@@ -293,8 +321,8 @@ export default function LoomLinkAgency() {
                             icon={<LayoutDashboard size={24} />}
                             color="teal"
                             isLight={isLight}
-                            bio="Ridwith is the architect of the human experience, bridging MERN expertise with sharp operational strategy. He specializes in high-fidelity Prompt Engineering to ensure complex logic is translated into secure clarity."
-                            tags={["MERN_Expertise", "UX_Logic", "Prompt_Engineer"]}
+                            bio="Ridwith is the architect of the human-machine interface, bridging complex systems architecture with sharp operational strategy. He specializes in high-fidelity Prompt Engineering and user-centric logic, ensuring that complex data streams are translated into secure, actionable clarity for operational teams."
+                            tags={["HMI_Architect", "Prompt_Eng", "Operational_Clarity"]}
                         />
                     </div>
                 </div>

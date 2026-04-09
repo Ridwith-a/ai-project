@@ -10,6 +10,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { Cpu, ShieldCheck, Code2, LineChart, ArrowRight, Lightbulb, Workflow, Database, LayoutDashboard, Search, Microchip, Globe, Fingerprint, Terminal, Settings } from 'lucide-react';
+import ContactModal from '../components/ContactModal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -109,6 +110,7 @@ export default function LoomLinkAgency() {
     const lifecycleRef = useRef(null);
     const footerRef = useRef(null);
     const footerLogoTextRef = useRef(null);
+    const [isContactOpen, setIsContactOpen] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
@@ -295,40 +297,63 @@ export default function LoomLinkAgency() {
 
                     {/* FOUNDER STAGE */}
                     <div className="flex flex-wrap lg:flex-nowrap items-stretch justify-center gap-8">
-                        <FounderCard
-                            name="Hrithik_Pramod"
-                            role="Co-Founder & AI Systems Architect"
-                            icon={<Cpu size={24} />}
-                            color="blue"
-                            isLight={isLight}
-                            bio="Hrithik is the technical visionary behind LoomLink, bridging high-scale distributed systems with cutting-edge AI. He specializes in transforming complex data landscapes into autonomous systems through robust backend engineering."
-                            tags={["Neural_Systems", "Backend_Scale"]}
-                        />
+    <FounderCard
+        name="Hrithik_Pramod"
+        role="Founder & AI Systems Architect"
+        icon={<Cpu size={24} />}
+        color="blue"
+        isLight={isLight}
+        bio="Hrithik is the technical visionary behind LoomLink, bridging high-scale distributed systems with cutting-edge AI. He specializes in transforming complex data landscapes into autonomous systems through robust backend engineering."
+        mail="hrithik.pramod@loom-link.com"
+        tags={["Neural_Systems", "Backend_Scale"]}
+    />
 
-                        <FounderCard
-                            name="Akhilesh"
-                            role="Co-Founder & Product Manager"
-                            icon={<ShieldCheck size={24} />}
-                            color="orange"
-                            isLight={isLight}
-                            bio="With over eight years of experience engineering robust cloud infrastructure, Akhilesh leads the product vision. His expertise in Kubernetes and local LLM orchestration ensures Loom Link delivers hallucination-free, SAP-compliant intelligence."
-                            tags={["Cloud_Infra", "Kubernetes", "Edge-AI"]}
-                        />
+    <FounderCard
+        name="Akhilesh_PN"
+        role="Co-Founder & Product Manager"
+        icon={<ShieldCheck size={24} />}
+        color="orange"
+        isLight={isLight}
+        bio="With over eight years of experience engineering robust cloud infrastructure, Akhilesh leads the product vision. His expertise in Kubernetes and local LLM orchestration ensures Loom Link delivers hallucination-free, SAP-compliant intelligence."
+        mail="akhilesh.pn@loom-link.com"
+        tags={["Cloud_Infra", "Kubernetes", "Edge-AI"]}
+    />
 
-                        <FounderCard
-                            name="Ridwith_A"
-                            role="Co-Founder & Full-Stack Architect"
-                            icon={<LayoutDashboard size={24} />}
-                            color="teal"
-                            isLight={isLight}
-                            bio="Ridwith is the architect of the human-machine interface, bridging complex systems architecture with sharp operational strategy. He specializes in high-fidelity Prompt Engineering and user-centric logic, ensuring that complex data streams are translated into secure, actionable clarity for operational teams."
-                            tags={["HMI_Architect", "Prompt_Eng", "Operational_Clarity"]}
-                        />
-                    </div>
+    <FounderCard
+        name="Ridwith_A"
+        role="Co-Founder & Full-Stack Architect"
+        icon={<LayoutDashboard size={24} />}
+        color="teal"
+        isLight={isLight}
+        bio="Ridwith is the architect of the human-machine interface, bridging complex systems architecture with sharp operational strategy. He specializes in high-fidelity Prompt Engineering and user-centric logic, ensuring that complex data streams are translated into secure, actionable clarity for operational teams."
+        mail="ridwith.a@loom-link.com"
+        tags={["HMI_Architect", "Prompt_Eng", "Operational_Clarity"]}
+    />
+</div>
                 </div>
 
 
             </section>
+            {/* CONTACT TRIGGER SECTION */}
+<section className="py-20 flex justify-center relative z-10">
+    <button 
+        onClick={() => setIsContactOpen(true)}
+        className={`group relative px-12 py-6 rounded-full font-black uppercase italic tracking-widest overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95
+        ${isLight ? 'bg-black text-white' : 'bg-white text-black'}`}
+    >
+        <span className="relative z-10 flex items-center gap-4 text-2xl">
+            Contact LoomLink <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+        </span>
+        <div className="absolute inset-0 bg-blue-600 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500"></div>
+    </button>
+</section>
+
+{/* Include the Modal component */}
+<ContactModal 
+    isOpen={isContactOpen} 
+    onClose={() => setIsContactOpen(false)} 
+    isLight={isLight} 
+/>
 
             <Footer />
 
